@@ -7,6 +7,8 @@ using Photon.Realtime;
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     public static PhotonManager Instance;
+    public bool isConnected;
+    public bool isNetworkError;
     public void Awake()
     {
         if (Instance != null && Instance != this)
@@ -15,6 +17,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         else
             Instance = this;
 
+        // reset connection status
+        isConnected = false;
         DontDestroyOnLoad(gameObject);
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -24,7 +28,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Conected");
+        isConnected = true;
+        isNetworkError = false;
+    }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        isNetworkError = true;
     }
 
     public override void OnJoinedLobby()
@@ -78,4 +87,28 @@ public class PhotonManager : MonoBehaviourPunCallbacks
        
     }
     #endregion
+
+    #region Custome Helper Methods
+    public void LoadSceneAsync(string scene)
+    {
+        PhotonNetwork.LoadLevel(scene);
+    }
+
+    public bool IsNetworkError()
+    {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+            return true;
+        if(isNetworkError)
+            return true;
+
+        return false;
+    }
+
+    public void Reconnect()
+    {
+        isNetworkError = false;
+        PhotonNetwork.ConnectUsingSettings();
+    }
+    #endregion
+
 }
