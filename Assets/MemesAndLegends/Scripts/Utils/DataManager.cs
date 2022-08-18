@@ -19,45 +19,45 @@ public class PlayerDataPref
 public static class DataManager
 {
     #region Set Data
-    public static void SetPlayer()
-	{
-		PlayerDataPref data = new PlayerDataPref();
-		data.player = new PlayerDataPref.RecordPref();
-		data.player.username = PlayerData.Instance.username;
-		data.player.xp = PlayerData.Instance.xp;
+ //   public static void SetPlayer()
+	//{
+	//	PlayerDataPref data = new PlayerDataPref();
+	//	data.player = new PlayerDataPref.RecordPref();
+	//	data.player.username = PlayerData.Instance.username;
+	//	data.player.xp = PlayerData.Instance.xp;
 
-		string rawData = JsonUtility.ToJson(data);
-		PlayerPrefs.SetString("Player_Attributes", rawData);
-		PlayerPrefs.Save();
-	}
-    #endregion
-    #region Get Data
-    public static void GetPlayer()
-	{
-		if (PlayerPrefs.HasKey("Player_Attributes"))
-		{
-			string rawData = PlayerPrefs.GetString("Player_Attributes");
-			PlayerDataPref data = ParsePlayer(rawData);
+	//	string rawData = JsonUtility.ToJson(data);
+	//	PlayerPrefs.SetString("Player_Attributes", rawData);
+	//	PlayerPrefs.Save();
+	//}
+ //   #endregion
+ //   #region Get Data
+ //   public static void GetPlayer()
+	//{
+	//	if (PlayerPrefs.HasKey("Player_Attributes"))
+	//	{
+	//		string rawData = PlayerPrefs.GetString("Player_Attributes");
+	//		PlayerDataPref data = ParsePlayer(rawData);
 
-			PlayerData.Instance.username = data.player.username;
-			PlayerData.Instance.xp = data.player.xp;
+	//		PlayerData.Instance.username = data.player.username;
+	//		PlayerData.Instance.xp = data.player.xp;
 
-		}
-		else
-		{
-			ApplyDefaultPlayerSettings();
-		}
-	}
+	//	}
+	//	else
+	//	{
+	//		ApplyDefaultPlayerSettings();
+	//	}
+	//}
 
     #endregion
 
     #region Defaults
-    static void ApplyDefaultPlayerSettings()
-	{
-		PlayerData.Instance.username = "Default User";
-		PlayerData.Instance.xp = 0;
-		SetPlayer();
-	}
+ //   static void ApplyDefaultPlayerSettings()
+	//{
+	//	PlayerData.Instance.username = "Default User";
+	//	PlayerData.Instance.xp = 0;
+	//	SetPlayer();
+	//}
 
     #endregion
 

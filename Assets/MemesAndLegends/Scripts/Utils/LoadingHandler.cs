@@ -1,5 +1,6 @@
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LoadingHandler : MonoBehaviour
 {
@@ -17,16 +18,10 @@ public class LoadingHandler : MonoBehaviour
     {
         if (fillBar.fillAmount >= 0.8f)
         {
-            if(PhotonManager.Instance.isConnected)
-            {
-                fillBar.fillAmount = 1f;
-                PhotonManager.Instance.LoadSceneAsync(NextScreen);
-            }
-            else
-            {
-                if(PhotonManager.Instance.IsNetworkError())
-                    ErrorPopup.SetActive(true);
-            }
+          
+              fillBar.fillAmount = 1f;
+            SceneManager.LoadScene(NextScreen, LoadSceneMode.Additive);
+
         }
         else
         {
@@ -39,7 +34,6 @@ public class LoadingHandler : MonoBehaviour
     {
         fillBar.fillAmount = 0.1f;
         ErrorPopup.SetActive(false);
-        PhotonManager.Instance.Reconnect();
 
     }
 }
