@@ -20,7 +20,7 @@ public class LoadingHandler : MonoBehaviour
             if(PhotonManager.Instance.isConnected)
             {
                 fillBar.fillAmount = 1f;
-               // PhotonManager.Instance.LoadSceneAsync(NextScreen);
+                PhotonManager.Instance.LoadSceneAsync(NextScreen);
             }
             else
             {
