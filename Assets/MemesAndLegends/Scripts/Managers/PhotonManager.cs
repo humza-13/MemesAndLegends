@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
-using Photon.Realtime;
 
-public class PhotonManager : MonoBehaviourPunCallbacks
+
+public class PhotonManager : MonoBehaviour
 {
     public static PhotonManager Instance;
     public bool isConnected;
@@ -20,78 +19,78 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         // reset connection status
         isConnected = false;
         DontDestroyOnLoad(gameObject);
-        PhotonNetwork.ConnectUsingSettings();
-        PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.ConnectUsingSettings();
+        //PhotonNetwork.AutomaticallySyncScene = true;
        
     }
-    #region PUN CALLBACKS
+    //#region PUN CALLBACKS
 
-    public override void OnConnectedToMaster()
-    {
-        isConnected = true;
-        isNetworkError = false;
-    }
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        isNetworkError = true;
-    }
+    //public override void OnConnectedToMaster()
+    //{
+    //    isConnected = true;
+    //    isNetworkError = false;
+    //}
+    //public override void OnDisconnected(DisconnectCause cause)
+    //{
+    //    isNetworkError = true;
+    //}
 
-    public override void OnJoinedLobby()
-    {
+    //public override void OnJoinedLobby()
+    //{
       
-    }
+    //}
 
-    // note: when a client joins / creates a room, OnLeftLobby does not get called, even if the client was in a lobby before
-    public override void OnLeftLobby()
-    {
+    //// note: when a client joins / creates a room, OnLeftLobby does not get called, even if the client was in a lobby before
+    //public override void OnLeftLobby()
+    //{
         
-    }
+    //}
 
-    public override void OnCreateRoomFailed(short returnCode, string message)
-    {
+    //public override void OnCreateRoomFailed(short returnCode, string message)
+    //{
        
-    }
+    //}
 
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
+    //public override void OnJoinRoomFailed(short returnCode, string message)
+    //{
        
-    }
+    //}
 
-    public override void OnJoinRandomFailed(short returnCode, string message)
-    {
+    //public override void OnJoinRandomFailed(short returnCode, string message)
+    //{
        
-    }
+    //}
 
-    public override void OnJoinedRoom()
-    {
+    //public override void OnJoinedRoom()
+    //{
       
-    }
+    //}
 
-    public override void OnLeftRoom()
-    {
+    //public override void OnLeftRoom()
+    //{
        
-    }
+    //}
 
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
+    //public override void OnPlayerEnteredRoom(Player newPlayer)
+    //{
       
-    }
+    //}
 
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
+    //public override void OnPlayerLeftRoom(Player otherPlayer)
+    //{
         
-    }
+    //}
 
-    public override void OnMasterClientSwitched(Player newMasterClient)
-    {
+    //public override void OnMasterClientSwitched(Player newMasterClient)
+    //{
        
-    }
-    #endregion
+    //}
+    //#endregion
 
     #region Custome Helper Methods
     public void LoadSceneAsync(string scene)
     {
-        PhotonNetwork.LoadLevel(scene);
+       // PhotonNetwork.LoadLevel(scene);
     }
 
     public bool IsNetworkError()
@@ -107,7 +106,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void Reconnect()
     {
         isNetworkError = false;
-        PhotonNetwork.ConnectUsingSettings();
+      //  PhotonNetwork.ConnectUsingSettings();
     }
     #endregion
 
