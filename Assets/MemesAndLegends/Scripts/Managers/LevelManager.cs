@@ -5,22 +5,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 	public class LevelManager : NetworkSceneManagerBase
-	{
-		public const int LAUNCH_SCENE = 0;
-		public const int HOME_SCENE = 1;
-		
+	{	
 		public static LevelManager Instance => Singleton<LevelManager>.Instance;
-		
-		public static void LoadMenu()
-		{
-			Instance.Runner.SetActiveScene(HOME_SCENE);
-		}
 
-		public static void LoadTrack(int sceneIndex)
-		{
-			Instance.Runner.SetActiveScene(sceneIndex);
-		}
-		
 		protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene, FinishedLoadingDelegate finished)
 		{
 			Debug.Log($"Loading scene {newScene}");
@@ -29,7 +16,7 @@ using UnityEngine.SceneManagement;
 
 			List<NetworkObject> sceneObjects = new List<NetworkObject>();
 
-			if (newScene >= HOME_SCENE)
+			if (newScene >= 1)
 			{
 				yield return SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Single);
 				Scene loadedScene = SceneManager.GetSceneByBuildIndex(newScene);
@@ -60,23 +47,14 @@ using UnityEngine.SceneManagement;
 
 		private void PreLoadScene(int scene)
 		{
-			if (scene > HOME_SCENE)
-			{
-			
-			
-			}
-			else if(scene==HOME_SCENE)
-			{
-				foreach (RoomPlayer player in RoomPlayer.Players)
-				{
-					player.IsReady = false;
-				}
+		
+		
+				//foreach (RoomPlayer player in RoomPlayer.Players)
+				//{
+				//	player.IsReady = false;
+				//}
 				
-			}
-			else
-			{
-				
-			}
+		
 		
 		}
 	
