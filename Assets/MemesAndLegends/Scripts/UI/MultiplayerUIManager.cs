@@ -87,8 +87,7 @@ public class MultiplayerUIManager : MonoBehaviour
 
     public void OpenLobby()
     {
-        if (NetworkManager.ConnectionStatus == ConnectionStatus.Connected)
-            Lobby.SetActive(true);
+       Lobby.SetActive(true);
     }
 
   

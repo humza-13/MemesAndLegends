@@ -78,7 +78,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 			DisableClientSessionCreation = true
 		});
 		_loadingUI.SetActive(true);
-	}
+        _multiplayerUIManager.OpenLobby();
+    }
 
 	private void SetConnectionStatus(ConnectionStatus status)
 	{
@@ -146,7 +147,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 			roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
 		}
 		SetConnectionStatus(ConnectionStatus.Connected);
-		_multiplayerUIManager.OpenLobby();
+		
 
     }
 
