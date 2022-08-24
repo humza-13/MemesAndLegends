@@ -20,6 +20,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	[SerializeField] private GameManager _gameManagerPrefab;
 	[SerializeField] private RoomPlayer _roomPlayerPrefab;
 	[SerializeField] private GameObject _disconnectUI;
+	[SerializeField] private GameObject _loadingUI;
 
 	public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
 
@@ -67,6 +68,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 			PlayerCount = ServerInfo.MaxUsers,
 			DisableClientSessionCreation = true
 		});
+		_loadingUI.SetActive(true);
 	}
 
 	private void SetConnectionStatus(ConnectionStatus status)
@@ -80,8 +82,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
 		if (status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed)
 		{
-			//SceneManager.LoadScene(LevelManager.LOBBY_SCENE);
-		//	UIScreen.BackToInitial();
+			
 		}
 	}
 
@@ -124,6 +125,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	}
 	public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
 	{
+		_loadingUI.SetActive(false);
 		Debug.Log($"Player {player} Joined!");
 		if (runner.IsServer)
 		{
