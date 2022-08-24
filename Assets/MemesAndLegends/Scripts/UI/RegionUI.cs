@@ -21,7 +21,7 @@ public class RegionUI : MonoBehaviour
 
 			string curRegion = Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion;
 			Debug.Log($"Initial region is {curRegion}");
-			int curIndex = dropdown.options.FindIndex((op) => op.text == curRegion);
+			int curIndex = dropdown.options.FindIndex((op) => op.text.ToLower() == curRegion);
 			dropdown.value = curIndex != -1 ? curIndex : 0;
 		}
 	}
