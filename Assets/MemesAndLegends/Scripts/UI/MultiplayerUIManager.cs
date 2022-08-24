@@ -1,7 +1,11 @@
+using Fusion.Sockets;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using Fusion;
 
 public class MultiplayerUIManager : MonoBehaviour
 {
@@ -15,8 +19,12 @@ public class MultiplayerUIManager : MonoBehaviour
 
     [Header("Create Room Fields")]
     public Button createRoomConfirm;
-    public TMPro.TMP_InputField lobbyName;
+    public TMP_InputField lobbyName;
     private bool _lobbyIsValid;
+
+    [Header("Join Room Fields")]
+    public Button joinRoomConfirm;
+
 
     #region Create Room
     public void onLobbyValueChanged(string name)
@@ -24,7 +32,11 @@ public class MultiplayerUIManager : MonoBehaviour
         ServerInfo.LobbyName = name;
         createRoomConfirm.interactable = !string.IsNullOrEmpty(name);
     }
-   
+    
+    public void onJoinRoomValueChanged(string name)
+    {
+        joinRoomConfirm.interactable = !string.IsNullOrEmpty(name);
+    }
     public void ValidateLobby()
     {
         _lobbyIsValid = string.IsNullOrEmpty(ServerInfo.LobbyName) == false;
@@ -40,6 +52,7 @@ public class MultiplayerUIManager : MonoBehaviour
         }
     }
     #endregion
+  
     #region UI
     public void OpenMultiplayerMenu()
     {
@@ -74,8 +87,11 @@ public class MultiplayerUIManager : MonoBehaviour
 
     public void OpenLobby()
     {
-        Lobby.SetActive(true);
+        if (NetworkManager.ConnectionStatus == ConnectionStatus.Connected)
+            Lobby.SetActive(true);
     }
+
+  
     public void CloseLobby()
     {
         Lobby.SetActive(false);
@@ -83,6 +99,5 @@ public class MultiplayerUIManager : MonoBehaviour
 
 
     #endregion
-
 
 }

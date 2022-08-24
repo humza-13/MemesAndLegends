@@ -41,6 +41,7 @@ public class LobbyUI : MonoBehaviour
 		readyUp.onClick.AddListener(ReadyUpListener);
 
 		IsSubscribed = true;
+		Debug.Log("Aetting up");
 	}
 
 	private void OnDestroy()
@@ -65,6 +66,7 @@ public class LobbyUI : MonoBehaviour
 			ListItems.Remove(player);
 		}
 
+		Debug.Log("adding playerrr");
 		var obj = Instantiate(textPrefab, parent).GetComponent<LobbyItemUI>();
 		obj.SetPlayer(player);
 

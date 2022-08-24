@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,17 +20,25 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
 	[SerializeField] private GameManager _gameManagerPrefab;
 	[SerializeField] private RoomPlayer _roomPlayerPrefab;
-	[SerializeField] private GameObject _disconnectUI;
 	[SerializeField] private GameObject _loadingUI;
 
 	public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
+	public static ShutdownReason FailedStatus = ShutdownReason.Ok;
+	public static bool shutDown = false;
 
 	private NetworkRunner _runner;
 	private FusionObjectPoolRoot _pool;
 	private GameMode _gameMode;
 	private LevelManager _levelManager;
 
-	private void Start()
+    [Header("Error Fields")]
+    [SerializeField] private GameObject _errorPopup;
+    [SerializeField] private TextMeshProUGUI _errorTxt;
+
+	[Header("Multiplayer UI Manager")]
+    [SerializeField] private MultiplayerUIManager _multiplayerUIManager;
+
+    private void Start()
 	{
 		Application.runInBackground = true;
 		Application.targetFrameRate = Screen.currentResolution.refreshRate;
@@ -82,7 +91,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
 		if (status == ConnectionStatus.Disconnected || status == ConnectionStatus.Failed)
 		{
-			
+			_loadingUI?.SetActive(false);
 		}
 	}
 
@@ -121,7 +130,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 		LeaveSession();
 		SetConnectionStatus(ConnectionStatus.Failed);
 		(string status, string message) = ConnectFailedReasonToHuman(reason);
-		_disconnectUI.SetActive(true);
+		_errorTxt.text = "";
+		_errorTxt.text = status + "\n" + message;
+		_errorPopup.SetActive(true);
 	}
 	public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
 	{
@@ -135,7 +146,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 			roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
 		}
 		SetConnectionStatus(ConnectionStatus.Connected);
-	}
+		_multiplayerUIManager.OpenLobby();
+
+    }
 
 	public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
 	{
@@ -148,11 +161,16 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
 	{
 		Debug.Log($"OnShutdown {shutdownReason}");
+		FailedStatus = shutdownReason;
+		shutDown = true;
 		SetConnectionStatus(ConnectionStatus.Disconnected);
 
 		(string status, string message) = ShutdownReasonToHuman(shutdownReason);
+        _errorTxt.text = "";
+        _errorTxt.text = status + "\n" + message;
+        _errorPopup.SetActive(true);
 
-		RoomPlayer.Players.Clear();
+        RoomPlayer.Players.Clear();
 
 		if (_runner)
 			Destroy(_runner.gameObject);
@@ -228,4 +246,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 				return ("Unknown Connection Failure", $"{(int)reason}");
 		}
 	}
+    public void CloseConnectionError()
+    {
+        _errorPopup.SetActive(false);
+    }
 }
