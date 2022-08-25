@@ -1,4 +1,5 @@
 using Fusion;
+using System.Collections.Generic;
 using System.Resources;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class CharacterSpawner : NetworkBehaviour
     // References to the NetworkObject prefab to be used for the players
     [SerializeField] private NetworkPrefabRef _characterNetworkPrefab = NetworkPrefabRef.Empty;
 
-    public GameObject[] _spawnPoints;
+    public List<GameObject> _spawnPoints;
     private void Awake()
     {
         NetworkManager.SetSpawner(this);

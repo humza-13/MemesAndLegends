@@ -28,7 +28,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	public static ShutdownReason FailedStatus = ShutdownReason.Ok;
 	public static bool shutDown = false;
 
-	private NetworkRunner _runner;
+	public static NetworkRunner Runner { get; private set; }
 	private FusionObjectPoolRoot _pool;
 	private GameMode _gameMode;
 	private LevelManager _levelManager;
@@ -58,20 +58,20 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		SetConnectionStatus(ConnectionStatus.Connecting);
 
-		if (_runner != null)
+		if (Runner != null)
 			LeaveSession();
 
 		GameObject go = new GameObject("Session");
 		DontDestroyOnLoad(go);
 
-		_runner = go.AddComponent<NetworkRunner>();
-		_runner.ProvideInput = _gameMode != GameMode.Server;
-		_runner.AddCallbacks(this);
+		Runner = go.AddComponent<NetworkRunner>();
+		Runner.ProvideInput = _gameMode != GameMode.Server;
+		Runner.AddCallbacks(this);
 
 		_pool = go.AddComponent<FusionObjectPoolRoot>();
 
 		Debug.Log($"Created gameobject {go.name} - starting game");
-		_runner.StartGame(new StartGameArgs
+		Runner.StartGame(new StartGameArgs
 		{
 			GameMode = _gameMode,
 			SessionName = _gameMode == GameMode.Host ? ServerInfo.LobbyName : ClientInfo.LobbyName,
@@ -101,8 +101,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
 	public void LeaveSession()
 	{
-		if (_runner != null)
-			_runner.Shutdown();
+		if (Runner != null)
+			Runner.Shutdown();
 		else
 			SetConnectionStatus(ConnectionStatus.Disconnected);
 	}
@@ -176,14 +176,14 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         RoomPlayer.Players.Clear();
 
-		if (_runner)
-			Destroy(_runner.gameObject);
+		if (Runner)
+			Destroy(Runner.gameObject);
 
 		// Reset the object pools
 		_pool.ClearPools();
 		_pool = null;
 
-		_runner = null;
+		Runner = null;
 	}
 	public void OnInput(NetworkRunner runner, NetworkInput input) { }
 	public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }

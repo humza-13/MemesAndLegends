@@ -38,7 +38,7 @@ using UnityEngine.SceneManagement;
                 foreach (var player in RoomPlayer.Players)
                 {
                     player.GameState = RoomPlayer.EGameState.GameReady;
-                    NetworkManager.Spawner.SpawnPlayer(Runner, player);
+                    NetworkManager.Spawner.SpawnPlayer(NetworkManager.Runner, player);
                 }
             }
         }
