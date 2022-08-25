@@ -3709,6 +3709,7 @@ MonoBehaviour:
   _gameManagerPrefab: {fileID: 3712527739801693860, guid: a650ae5933a11214b89f040886bbb4c2, type: 3}
   _roomPlayerPrefab: {fileID: 4020302065990943648, guid: e80d37a6c4c47fc4f8babfd363cd9535, type: 3}
   _loadingUI: {fileID: 3723901961881928046}
+  _characterNetworkPrefab: {fileID: 8726043428797964408, guid: 63f8f1a6d64395245a4c50c56c395500, type: 3}
   _errorPopup: {fileID: 321551798102048735}
   _errorTxt: {fileID: 321551799612703216}
   _multiplayerUIManager: {fileID: 1613520488}

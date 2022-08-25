@@ -12,8 +12,6 @@ using UnityEngine.SceneManagement;
 		{
 			Debug.Log($"Loading scene {newScene}");
 
-			PreLoadScene(newScene);
-
 			List<NetworkObject> sceneObjects = new List<NetworkObject>();
 
 			if (newScene >= 1)
@@ -29,37 +27,17 @@ using UnityEngine.SceneManagement;
 			// Delay one frame, so we're sure level objects has spawned locally
 			yield return null;
 
-			// Now we can safely spawn karts
-			//if ( != null && newScene>LOBBY_SCENE)
-			//{
-			//	if (Runner.GameMode == GameMode.Host)
-			//	{
-			//		foreach (var player in RoomPlayer.Players)
-			//		{
-			//			player.GameState = RoomPlayer.EGameState.GameCutscene;
-			//			GameManager.CurrentTrack.SpawnPlayer(Runner, player);
-			//		}
-			//	}
-			//}
 
-			PostLoadScene();
-		}
-
-		private void PreLoadScene(int scene)
+		if (Runner.GameMode == GameMode.Host)
 		{
-		
-		
-				//foreach (RoomPlayer player in RoomPlayer.Players)
-				//{
-				//	player.IsReady = false;
-				//}
+			foreach (var player in RoomPlayer.Players)
+			{
 				
-		
-		
+			}
 		}
-	
-		private void PostLoadScene()
-		{
-			
 		}
-	}
+    public static void LoadGameScene(int sceneIndex)
+    {
+        Instance.Runner.SetActiveScene(sceneIndex);
+    }
+}

@@ -15,6 +15,7 @@ public class RoomPlayer : NetworkBehaviour
 
 	public static readonly List<RoomPlayer> Players = new List<RoomPlayer>();
 
+
 	public static Action<RoomPlayer> PlayerJoined;
 	public static Action<RoomPlayer> PlayerLeft;
 	public static Action<RoomPlayer> PlayerChanged;

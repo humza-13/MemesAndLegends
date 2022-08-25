@@ -104,8 +104,8 @@ public class LobbyUI : MonoBehaviour
 
 		if (IsAllReady())
 		{
-		 // load level here
-		}
+            LevelManager.LoadGameScene(2);
+        }
 	}
 
 	private static bool IsAllReady() => RoomPlayer.Players.Count>0 && RoomPlayer.Players.All(player => player.IsReady);

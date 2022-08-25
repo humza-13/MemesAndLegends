@@ -12,12 +12,13 @@ public class LoadingUI : MonoBehaviour
         {
             dot.gameObject.SetActive(false);
         }
+        DontDestroyOnLoad(gameObject);
     }
     private async void Update()
     {
         foreach (var dot in dots)
         {
-            dot.gameObject.SetActive(!dot.activeSelf);
+            dot?.gameObject.SetActive(!dot.activeSelf);
             await Delay();
         }
     }
