@@ -1,58 +1,42 @@
 using Fusion;
+using System.Resources;
 using UnityEngine;
 
-public class CharacterSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft, ISpawned
+public class CharacterSpawner : NetworkBehaviour
 {
     // References to the NetworkObject prefab to be used for the players
     [SerializeField] private NetworkPrefabRef _characterNetworkPrefab = NetworkPrefabRef.Empty;
 
     public GameObject[] _spawnPoints = null;
-    
-    public void Spawned()
+    private void Awake()
     {
-        if (Object.HasStateAuthority == false) return;
+        NetworkManager.SetSpawner(this);
     }
-    
-    public void StartSpawner()
+    public override void Spawned()
     {
-        
-        foreach (var player in Runner.ActivePlayers)
-        {
-            SpawnCharacter(player);
-        }
+        base.Spawned();
+    }
+    private void OnDestroy()
+    {
+        NetworkManager.SetSpawner(null);
     }
 
-    public void PlayerJoined(PlayerRef player)
+    public void SpawnPlayer(NetworkRunner runner, RoomPlayer player)
     {
+        var index = RoomPlayer.Players.IndexOf(player);
+        var point = _spawnPoints[index].transform;
+        // Spawn player
+        var entity = runner.Spawn(
+            _characterNetworkPrefab,
+            point.position,
+            point.rotation,
+            player.Object.InputAuthority
+        );
+
        
-        SpawnCharacter(player);   
-    }
-    
-    
-    private void SpawnCharacter(PlayerRef player)
-    {
-        int index = player % _spawnPoints.Length;
-        var spawnPosition = _spawnPoints[index].transform.position; 
-        
-        var playerObject = Runner.Spawn(_characterNetworkPrefab, spawnPosition, Quaternion.identity, player);
-        // Set Player Object to facilitate access across systems.
-        Runner.SetPlayerObject(player, playerObject);
-        
-    }
-    
-    // Despawns the spaceship associated with a player when their client leaves the game session.
-    public void PlayerLeft(PlayerRef player)
-    {
-        DespawnSpaceship(player);
-    }
-    
-    private void DespawnSpaceship(PlayerRef player)
-    {
-        if (Runner.TryGetPlayerObject(player, out var spaceshipNetworkObject))
-        {
-            Runner.Despawn(spaceshipNetworkObject);
-        }
-        // Reset Player Object
-        Runner.SetPlayerObject(player, null);
+        player.GameState = RoomPlayer.EGameState.GameReady;
+
+        Debug.Log($"Spawning character for {player.Username} as {entity.name}");
+        entity.transform.name = $"character ({player.Username})";
     }
 }

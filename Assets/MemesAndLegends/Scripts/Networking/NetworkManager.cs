@@ -21,9 +21,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	[SerializeField] private GameManager _gameManagerPrefab;
 	[SerializeField] private RoomPlayer _roomPlayerPrefab;
 	[SerializeField] private GameObject _loadingUI;
-	[SerializeField] private GameObject _characterNetworkPrefab;
+    public static CharacterSpawner Spawner { get; private set; }
 
-	public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
+    public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
 	public static ShutdownReason FailedStatus = ShutdownReason.Ok;
 	public static bool shutDown = false;
 
@@ -148,10 +148,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 			roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
 		}
 		SetConnectionStatus(ConnectionStatus.Connected);
-        var playerObject = runner.Spawn(_characterNetworkPrefab, Vector3.zero, Quaternion.identity, player);
-        // Set Player Object to facilitate access across systems.
-        runner.SetPlayerObject(player, playerObject);
-
 
     }
 
@@ -254,5 +250,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void CloseConnectionError()
     {
         _errorPopup.SetActive(false);
+    }
+    public static void SetSpawner(CharacterSpawner spawner)
+    {
+        Spawner = spawner;
     }
 }
