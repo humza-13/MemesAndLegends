@@ -195,7 +195,9 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _characterNetworkPrefab:
     RawGuidValue: 63f8f1a6d64395245a4c50c56c395500
-  _spawnPoints: []
+  _spawnPoints:
+  - {fileID: 1567196237}
+  - {fileID: 1545299124}
 --- !u!1 &506733879
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,8 +45,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 		Application.runInBackground = true;
 		Application.targetFrameRate = Screen.currentResolution.refreshRate;
 		QualitySettings.vSyncCount = 1;
+        DontDestroyOnLoad(gameObject);
 
-		_levelManager = GetComponent<LevelManager>();
+        _levelManager = GetComponent<LevelManager>();
 	
 	}
 

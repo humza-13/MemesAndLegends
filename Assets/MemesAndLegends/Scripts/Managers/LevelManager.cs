@@ -32,10 +32,11 @@ using UnityEngine.SceneManagement;
 
         if (NetworkManager.Spawner != null && newScene > 1)
         {
+            Debug.Log("+++++++++++++++++++++++++++" + NetworkManager.Spawner);
             if (Runner.GameMode == GameMode.Host)
             {
                 foreach (var player in RoomPlayer.Players)
-                {  
+                {
                     player.GameState = RoomPlayer.EGameState.GameReady;
                     NetworkManager.Spawner.SpawnPlayer(Runner, player);
                 }
