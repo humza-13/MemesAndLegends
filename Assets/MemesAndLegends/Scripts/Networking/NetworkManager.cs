@@ -21,6 +21,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	[SerializeField] private GameManager _gameManagerPrefab;
 	[SerializeField] private RoomPlayer _roomPlayerPrefab;
 	[SerializeField] private GameObject _loadingUI;
+
     public static CharacterSpawner Spawner { get; private set; }
 
     public static ConnectionStatus ConnectionStatus = ConnectionStatus.Disconnected;
@@ -46,7 +47,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 		QualitySettings.vSyncCount = 1;
 
 		_levelManager = GetComponent<LevelManager>();
-		DontDestroyOnLoad(gameObject);
+	
 	}
 
 	public void SetCreateLobby() => _gameMode = GameMode.Host;
@@ -138,14 +139,15 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 	}
 	public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
 	{
-		_loadingUI.SetActive(false);
+		_loadingUI?.SetActive(false);
 		Debug.Log($"Player {player} Joined!");
 		if (runner.IsServer)
 		{
 			if (_gameMode == GameMode.Host)
 				runner.Spawn(_gameManagerPrefab, Vector3.zero, Quaternion.identity);
 			var roomPlayer = runner.Spawn(_roomPlayerPrefab, Vector3.zero, Quaternion.identity, player);
-			roomPlayer.GameState = RoomPlayer.EGameState.Lobby;
+			roomPlayer.GameState = RoomPlayer.EGameState.GameReady;
+			
 		}
 		SetConnectionStatus(ConnectionStatus.Connected);
 

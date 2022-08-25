@@ -18,8 +18,13 @@ public class LoadingUI : MonoBehaviour
     {
         foreach (var dot in dots)
         {
-            dot?.gameObject.SetActive(!dot.activeSelf);
-            await Delay();
+            if (dot != null)
+            {
+                dot?.gameObject.SetActive(!dot.activeSelf);
+                await Delay();
+            }
+            else
+                continue;
         }
     }
 

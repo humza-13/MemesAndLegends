@@ -23,6 +23,7 @@ public class CharacterSpawner : NetworkBehaviour
 
     public void SpawnPlayer(NetworkRunner runner, RoomPlayer player)
     {
+        Debug.Log("IN INSTANTIATE METHOD");
         var index = RoomPlayer.Players.IndexOf(player);
         var point = _spawnPoints[index].transform;
         // Spawn player

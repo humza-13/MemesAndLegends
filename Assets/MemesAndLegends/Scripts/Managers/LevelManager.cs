@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 	public class LevelManager : NetworkSceneManagerBase
 	{	
 		public static LevelManager Instance => Singleton<LevelManager>.Instance;
-       
 
+   
     protected override IEnumerator SwitchScene(SceneRef prevScene, SceneRef newScene, FinishedLoadingDelegate finished)
     {
         Debug.Log($"Loading scene {newScene}");
@@ -28,17 +28,17 @@ using UnityEngine.SceneManagement;
         finished(sceneObjects);
 
         // Delay one frame, so we're sure level objects has spawned locally
-        yield return null;
+        yield return new WaitForEndOfFrame();
 
         if (NetworkManager.Spawner != null && newScene > 1)
         {
             if (Runner.GameMode == GameMode.Host)
             {
-            foreach (var player in RoomPlayer.Players)
-            {
+                foreach (var player in RoomPlayer.Players)
+                {  
                     player.GameState = RoomPlayer.EGameState.GameReady;
                     NetworkManager.Spawner.SpawnPlayer(Runner, player);
-            }
+                }
             }
         }
     }
