@@ -29,18 +29,19 @@ public class CharacterSpawner : NetworkBehaviour
             var index = RoomPlayer.Players.IndexOf(player);
             var point = _spawnPoints[index].transform;
         // Spawn player
-        if (player.Object.HasInputAuthority)
-        {
+       // if (player.Object.HasInputAuthority)
+       // {
             var entity = runner.Spawn(
                 _characterNetworkPrefab,
-                Vector2.zero,
-                Quaternion.identity,
+                point.position,
+                point.rotation,
                 player.Object.InputAuthority
             );
             Debug.Log("HALF DONEE--------------");
             Debug.Log(entity.transform + "+++++++++++++++++++++++++");
             Debug.Log(point + "+++++++++++++++++++++++++");
             entity.gameObject.transform.SetParent(point);
+         
 
             Debug.Log("HALF DONEE 2--------------" + entity);
 
@@ -52,6 +53,9 @@ public class CharacterSpawner : NetworkBehaviour
 
             Debug.Log($"Spawning character for {player.Username} as {entity.name}");
             entity.transform.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = $"({player.Username})";
-        }
+           
+            Debug.Log($"RESTTED");
+
+      //  }
     }
 }

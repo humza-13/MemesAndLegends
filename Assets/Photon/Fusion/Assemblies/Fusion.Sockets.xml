@@ -681,11 +681,6 @@
             Stores the Current Fusion Serialization Version
             </summary>
         </member>
-        <member name="F:Fusion.Protocol.Message.InvalidVersion">
-            <summary>
-            Represents an Invalid Version
-            </summary>
-        </member>
         <member name="P:Fusion.Protocol.Message.CustomData">
             <summary>
             Custom data send along side any Protocol Message
