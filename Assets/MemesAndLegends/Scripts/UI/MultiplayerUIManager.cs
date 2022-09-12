@@ -1,11 +1,7 @@
-using Fusion.Sockets;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Fusion;
+
 
 public class MultiplayerUIManager : MonoBehaviour
 {
@@ -42,12 +38,12 @@ public class MultiplayerUIManager : MonoBehaviour
         _lobbyIsValid = string.IsNullOrEmpty(ServerInfo.LobbyName) == false;
     }
 
-    public void TryCreateLobby(NetworkManager launcher)
+    public void TryCreateLobby()
     {
         ValidateLobby();
         if (_lobbyIsValid)
         {
-            launcher.JoinOrCreateLobby();
+          //  launcher.JoinOrCreateLobby();
             _lobbyIsValid = false;
         }
     }

@@ -15,14 +15,14 @@ public class RegionUI : MonoBehaviour
 			dropdown.onValueChanged.AddListener((index) =>
 			{
 				string region = dropdown.options[index].text;
-				Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion = region.ToLower();
+		//		Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion = region.ToLower();
 				Debug.Log($"Setting region to {region}");
 			});
 
-			string curRegion = Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion;
-			Debug.Log($"Initial region is {curRegion}");
-			int curIndex = dropdown.options.FindIndex((op) => op.text.ToLower() == curRegion);
-			dropdown.value = curIndex != -1 ? curIndex : 0;
+		//	string curRegion = Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion;
+			//Debug.Log($"Initial region is {curRegion}");
+			//int curIndex = dropdown.options.FindIndex((op) => op.text.ToLower() == curRegion);
+			//dropdown.value = curIndex != -1 ? curIndex : 0;
 		}
 	}
 }
