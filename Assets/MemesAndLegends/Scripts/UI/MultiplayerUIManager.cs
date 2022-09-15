@@ -21,6 +21,8 @@ public class MultiplayerUIManager : MonoBehaviour
     [Header("Join Room Fields")]
     public Button joinRoomConfirm;
 
+    [Header("Network Manager")]
+    public GameObject NetworkManager;
 
     #region Create Room
     public void onLobbyValueChanged(string name)
@@ -31,6 +33,7 @@ public class MultiplayerUIManager : MonoBehaviour
     
     public void onJoinRoomValueChanged(string name)
     {
+        ServerInfo.LobbyName = name;
         joinRoomConfirm.interactable = !string.IsNullOrEmpty(name);
     }
     public void ValidateLobby()
@@ -43,23 +46,35 @@ public class MultiplayerUIManager : MonoBehaviour
         ValidateLobby();
         if (_lobbyIsValid)
         {
-          //  launcher.JoinOrCreateLobby();
+             NetworkManager.GetComponent<NetworkManager>().OnCreateRoomButtonClicked();
+            _lobbyIsValid = false;
+        }
+    }
+    public void TryJoinLobby()
+    {
+        ValidateLobby();
+        if (_lobbyIsValid)
+        {
+            NetworkManager.GetComponent<NetworkManager>().OnJoinRoomButtonClicked();
             _lobbyIsValid = false;
         }
     }
     #endregion
-  
+
     #region UI
     public void OpenMultiplayerMenu()
     {
         ActionMenu.SetActive(false);
         MultiplayerMenu.SetActive(true);
+        NetworkManager.SetActive(true);
+
     }
 
     public void CloseMultiplayerMenu()
     {
         MultiplayerMenu.SetActive(false);
         ActionMenu.SetActive(true);
+        NetworkManager?.SetActive(false);
     }
 
     public void OpenJoinRoom()

@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,16 @@ public class PlayerProfile : MonoBehaviour
     {
         userNamePanel.SetActive(true);
         nicknameInput.text= ClientInfo.Username;
+        string playerName = ClientInfo.Username;
+
+        if (!playerName.Equals(""))
+        {
+            PhotonNetwork.LocalPlayer.NickName = playerName;
+        }
+        else
+        {
+            Debug.LogError("Player Name is invalid.");
+        }
     }
     public void closeUserName()
     {
