@@ -12,6 +12,12 @@ public static class ClientInfo {
         set => PlayerPrefs.SetString("lobby", value);
     }
 
+    public static int XP
+    {
+        get => PlayerPrefs.GetInt("xp", 100);
+        set => PlayerPrefs.SetInt("xp", value);
+    }
+
     public static List<int> PlayerCharacters;
 
     public static void SetCharacters(int ID)

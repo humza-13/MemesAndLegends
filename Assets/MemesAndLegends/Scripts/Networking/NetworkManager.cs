@@ -229,7 +229,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
 
-        //PhotonNetwork.LoadLevel("DemoAsteroids-GameScene");
+        PhotonNetwork.LoadLevel("GamePlay");
     }
 
     #endregion

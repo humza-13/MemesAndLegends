@@ -1,9 +1,15 @@
+
 using UnityEngine;
-using UnityEngine.Rendering;
+
 
 [CreateAssetMenu(fileName = "Character Object", menuName = "ScriptableObjects/CharacterObject", order = 1)]
 public class CharacterObject : ScriptableObject
 {
+    public CharacterObject ShallowCopy()
+    {
+        return (CharacterObject)this.MemberwiseClone();
+    }
+
     [Header("Character Info")]
     public string Name;
     public string Description;

@@ -20,7 +20,7 @@ public class CharacterResource : MonoBehaviour
     void Awake()
     {
         _instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this);
     }
 
     [Header("Level 1 Characters")]
