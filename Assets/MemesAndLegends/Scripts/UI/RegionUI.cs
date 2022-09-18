@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ public class RegionUI : MonoBehaviour
 			dropdown.onValueChanged.AddListener((index) =>
 			{
 				string region = dropdown.options[index].text;
-		//		Fusion.Photon.Realtime.PhotonAppSettings.Instance.AppSettings.FixedRegion = region.ToLower();
+		
 				Debug.Log($"Setting region to {region}");
 			});
 

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e5aa4d184fd67949b8cc4618198b4b7, type: 3}
+  m_Name: Fox Girl
+  m_EditorClassIdentifier: 
+  Name: 'Fox Girl '
+  Description: 'A cute little creature resulting from the experimentation of magic
+    and genetics. '
+  Role: Fire
+  Level: 1
+  ID: 3
+  Character_Class: 1
+  Character_Sprite: {fileID: 21300000, guid: 5656dc3f3327f6245b55169d607349da, type: 3}
+  Character_Power_Sprite: {fileID: 21300000, guid: 1d24290f967d845358a5920bb8b3d6c0, type: 3}
+  Attack_Power: 100
+  Defence: 15
+  Health: 40
+  Movement: 2
+  Movement_Range: 1
+  Attack: 1
+  Attack_Range: 2
+  HasSpecial: 0
+  Abillity: 1
+  Special_Description: 
+  Power: 0
+  Power_Range: 0
+  Limit: 1
