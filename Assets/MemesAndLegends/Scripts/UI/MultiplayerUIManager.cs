@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using Photon.Pun;
+using ExitGames.Client.Photon;
 
 public class MultiplayerUIManager : MonoBehaviour
 {
@@ -67,7 +68,12 @@ public class MultiplayerUIManager : MonoBehaviour
         ActionMenu.SetActive(false);
         MultiplayerMenu.SetActive(true);
         NetworkManager.SetActive(true);
-
+          
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c1", ClientInfo.PlayerCharacters[0] } });
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c2", ClientInfo.PlayerCharacters[1] } });
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c3", ClientInfo.PlayerCharacters[2] } });  
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c4", ClientInfo.PlayerCharacters[3] } });    
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "XP", ClientInfo.XP } });
     }
 
     public void CloseMultiplayerMenu()

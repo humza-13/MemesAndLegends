@@ -1,5 +1,6 @@
 using Mono.Cecil.Cil;
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,13 +13,15 @@ public class BoardManager : MonoBehaviour
     public void Start()
     {
         pv = GetComponent<PhotonView>();
-       // if(pv.IsMine)
-        //{
-
-            var temp = PhotonNetwork.Instantiate(PlayerPrefab.name, new Vector2(PlayerContent.position.x, PlayerContent.position.y), Quaternion.identity);
-            temp.gameObject.transform.SetParent(PlayerContent);
-            temp.GetComponent<PlayerController>().Init();
-        //}
+        if (pv.Owner.IsMasterClient)
+        {
+            foreach (Player p in PhotonNetwork.PlayerList)
+            {
+                var temp = PhotonNetwork.Instantiate(PlayerPrefab.name, PlayerContent.position, Quaternion.identity);
+                temp.gameObject.transform.SetParent(PlayerContent);
+                temp.GetComponent<PlayerController>().Init(p);
+            }
+        }
     }
 
 }

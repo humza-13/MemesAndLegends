@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class PlayerController : MonoBehaviour, IPunObservable
 {
@@ -15,31 +17,28 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     public PhotonView pv;
 
-    public void Init()
+    public void Init(Player p)
     {
-        ClientInfo.XP = 200;
         if(pv == null)
             pv = GetComponent<PhotonView>();
         
-      //  if (pv.IsMine)
-       // {
-            PlayerName.text = PhotonNetwork.LocalPlayer.NickName;
-            UpdateXp(ClientInfo.XP);
-
-            foreach (int ID in ClientInfo.PlayerCharacters)
-                InitCharacter(ID);
-       // }
+        if (!pv.IsMine)
+            return;
+        
+        PlayerName.text = p.NickName;
+        UpdateXp((int)p.CustomProperties["XP"]);
+        InitCharacter((int)p.CustomProperties["c1"]);
+        InitCharacter((int)p.CustomProperties["c2"]);
+        InitCharacter((int)p.CustomProperties["c3"]);
+        InitCharacter((int)p.CustomProperties["c4"]);
+        
     }
 
     void InitCharacter(int ID)
     {
-       // if(pv.IsMine)
-        //{
-            var temp =  PhotonNetwork.Instantiate(CharacterPrefab.name, new Vector2(characterContent.position.x, characterContent.position.y), Quaternion.identity);
-            temp.gameObject.GetComponent<CharacterController>().Init(ID);
-            temp.gameObject.transform.SetParent(characterContent);
-
-        //}
+        var temp =  PhotonNetwork.Instantiate(CharacterPrefab.name, new Vector2(characterContent.position.x, characterContent.position.y), Quaternion.identity);
+        temp.gameObject.transform.SetParent(characterContent);
+        temp.gameObject.GetComponent<CharacterController>().Init(ID);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -55,11 +54,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     public void UpdateXp(int Xp)
     {
-       // if (pv.IsMine)
-      //  {
-            if (Xp > XpSlider.maxValue)
-                XpSlider.maxValue *= 10;
-            XpSlider.value = Xp;
-      //  }
+        if (Xp > XpSlider.maxValue)
+            XpSlider.maxValue *= 10;
+        XpSlider.value = Xp; 
     }
 }

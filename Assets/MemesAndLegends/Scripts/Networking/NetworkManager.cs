@@ -226,6 +226,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
   
     public void OnStartGameButtonClicked()
     {
+      
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.CurrentRoom.IsVisible = false;
 

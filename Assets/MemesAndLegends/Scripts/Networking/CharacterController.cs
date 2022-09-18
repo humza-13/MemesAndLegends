@@ -25,13 +25,10 @@ public class CharacterController : MonoBehaviour, IPunObservable
         if(pv == null)
             pv = GetComponent<PhotonView>();
         characterProps = CharacterResource.Instance.FindCharacterWithID(ID).ShallowCopy();
-        Debug.Log(ID);
-        Debug.Log(characterProps.ID);
-      //  if(pv.IsMine)
-      //  {
-            Name.text = characterProps.Name;
-            Icon.sprite = characterProps.Character_Sprite;
-      //  }
+     
+        Name.text = characterProps.Name;
+        Icon.sprite = characterProps.Character_Sprite;
+ 
         UpdateHealth(characterProps.Health);
         SetAttack(characterProps.Attack_Power);
         SetDefence(characterProps.Defence);
