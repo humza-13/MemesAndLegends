@@ -2824,7 +2824,7 @@ GameObject:
   - component: {fileID: 351416945}
   m_Layer: 0
   m_Name: CharacterResource
-  m_TagString: Untagged
+  m_TagString: CharacterResource
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2843,10 +2843,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterObjectsLevel1:
   - {fileID: 11400000, guid: daa23e8cf7aeef2438d3f6a6a5dcbe41, type: 2}
+  - {fileID: 11400000, guid: 242db2684e87ff549baa136f008901d0, type: 2}
+  - {fileID: 11400000, guid: 1143821a8897aee42ba574c1950b61ec, type: 2}
   - {fileID: 11400000, guid: 72953d779818a5b40b0c4a5b5613610f, type: 2}
   - {fileID: 11400000, guid: 74928eb363272554c82f12d733a965fe, type: 2}
-  - {fileID: 11400000, guid: 1143821a8897aee42ba574c1950b61ec, type: 2}
-  - {fileID: 11400000, guid: 242db2684e87ff549baa136f008901d0, type: 2}
   characterObjectsLevel2:
   - {fileID: 11400000, guid: 82f9a8c08bbc2c749bf08560553541e8, type: 2}
 --- !u!4 &351416946
@@ -11392,6 +11392,7 @@ MonoBehaviour:
   character: {fileID: 3152619897119183382}
   characterPowerIcon: {fileID: 3152619896717371738}
   characterPower: {fileID: 3152619896158537494}
+  resource: {fileID: 0}
 --- !u!1 &1519095376
 GameObject:
   m_ObjectHideFlags: 0

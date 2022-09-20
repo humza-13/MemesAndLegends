@@ -19,12 +19,21 @@ public class CharacterController : MonoBehaviour, IPunObservable
 
     public CharacterObject characterProps;
     public PhotonView pv;
+    public CharacterResource resource;
 
+    private void Awake()
+    {
+        if(resource == null)
+        {
+            var _res = GameObject.FindGameObjectsWithTag("CharacterResource")[0].GetComponent<CharacterResource>();
+            resource = _res;
+        }
+    }
     public void Init(int ID)
     {
         if(pv == null)
             pv = GetComponent<PhotonView>();
-        characterProps = CharacterResource.Instance.FindCharacterWithID(ID).ShallowCopy();
+        characterProps = resource.FindCharacterWithID(ID).ShallowCopy();
      
         Name.text = characterProps.Name;
         Icon.sprite = characterProps.Character_Sprite;
@@ -35,17 +44,20 @@ public class CharacterController : MonoBehaviour, IPunObservable
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting)
+        if (characterProps != null)
         {
-            stream.SendNext(characterProps.Health);
-            stream.SendNext(characterProps.Attack_Power);
-            stream.SendNext(characterProps.Defence);
-        }
-        if (stream.IsReading)
-        {
-            UpdateHealth((int)stream.ReceiveNext());
-            SetAttack((int)stream.ReceiveNext());
-            SetDefence((int)stream.ReceiveNext());
+            if (stream.IsWriting)
+            {
+                stream.SendNext(characterProps.Health);
+                stream.SendNext(characterProps.Attack_Power);
+                stream.SendNext(characterProps.Defence);
+            }
+            if (stream.IsReading)
+            {
+                UpdateHealth((int)stream.ReceiveNext());
+                SetAttack((int)stream.ReceiveNext());
+                SetDefence((int)stream.ReceiveNext());
+            }
         }
     }
 

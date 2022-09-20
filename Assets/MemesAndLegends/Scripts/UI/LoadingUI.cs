@@ -12,7 +12,6 @@ public class LoadingUI : MonoBehaviour
         {
             dot.gameObject.SetActive(false);
         }
-     //   DontDestroyOnLoad(gameObject);
     }
     private async void Update()
     {

@@ -4,22 +4,8 @@ using UnityEngine;
 
 public class CharacterResource : MonoBehaviour
 {
-    private static CharacterResource _instance;
-    public static CharacterResource Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindObjectOfType<CharacterResource>();
-            }
-            return _instance;
-        }
-    }
-
     void Awake()
     {
-        _instance = this;
         DontDestroyOnLoad(this);
     }
 
@@ -37,4 +23,5 @@ public class CharacterResource : MonoBehaviour
        
         return null;
     }
+  
 }

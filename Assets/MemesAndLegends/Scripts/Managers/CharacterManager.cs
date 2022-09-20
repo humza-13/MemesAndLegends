@@ -30,18 +30,22 @@ public class CharacterManager : MonoBehaviour
     public Image character;
     public Image characterPowerIcon;
     public Image characterPower;
-    
+    public CharacterResource resource;
     private int _currentSelected = 0;
 
+    private void Awake()
+    {
+        resource = GameObject.FindGameObjectWithTag("CharacterResource").GetComponent<CharacterResource>();
+    }
     private void Start()
     {
-        SetCharacterStage(CharacterResource.Instance.characterObjectsLevel1[_currentSelected]);
+        SetCharacterStage(resource.characterObjectsLevel1[_currentSelected]);
     }
 
     public void MoveNext()
     {
-        _currentSelected = _currentSelected >= CharacterResource.Instance.characterObjectsLevel1.Count-1 ? 0 : (_currentSelected + 1);
-        SetCharacterStage(CharacterResource.Instance.characterObjectsLevel1[_currentSelected]);
+        _currentSelected = _currentSelected >= resource.characterObjectsLevel1.Count-1 ? 0 : (_currentSelected + 1);
+        SetCharacterStage(resource.characterObjectsLevel1[_currentSelected]);
     }
     public void SetCharacterStage(CharacterObject obj)
     {
@@ -85,7 +89,7 @@ public class CharacterManager : MonoBehaviour
     }
     public void AssignCharacter()
     {
-        ClientInfo.SetCharacters(CharacterResource.Instance.characterObjectsLevel1[_currentSelected].ID);
+        ClientInfo.SetCharacters(resource.characterObjectsLevel1[_currentSelected].ID);
         UpdateSelected();
         CloseCharacterSelect();
     }
@@ -108,7 +112,7 @@ public class CharacterManager : MonoBehaviour
 
         public void AssignCharacter(int ID)
         {
-            var _char = CharacterResource.Instance.FindCharacterWithID(ID);
+            var _char = GameObject.FindGameObjectWithTag("CharacterResource").GetComponent<CharacterResource>().FindCharacterWithID(ID);
             this.ID = ID;
 
             Icon.sprite = _char.Character_Power_Sprite;

@@ -10,18 +10,20 @@ public class BoardManager : MonoBehaviour
     public GameObject PlayerPrefab;
     public Transform PlayerContent;
     public PhotonView pv;
-    public void Start()
+    public GameObject LoadingUI;
+
+    private void Awake()
+    {
+        LoadingUI.SetActive(true);
+    }
+    IEnumerator Start()
     {
         pv = GetComponent<PhotonView>();
-        if (pv.Owner.IsMasterClient)
-        {
-            foreach (Player p in PhotonNetwork.PlayerList)
-            {
-                var temp = PhotonNetwork.Instantiate(PlayerPrefab.name, PlayerContent.position, Quaternion.identity);
-                temp.gameObject.transform.SetParent(PlayerContent);
-                temp.GetComponent<PlayerController>().Init(p);
-            }
-        }
+        PhotonNetwork.Instantiate(PlayerPrefab.name, PlayerContent.position, Quaternion.identity);
+        
+        yield return new WaitForSeconds(3);
+        LoadingUI.SetActive(false);
+    
     }
 
 }

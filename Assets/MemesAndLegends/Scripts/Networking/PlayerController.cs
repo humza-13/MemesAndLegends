@@ -16,29 +16,38 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public GameObject CharacterPrefab;
 
     public PhotonView pv;
+    void Awake()
+    {
+        var spawnPoint = GameObject.FindGameObjectsWithTag("SpawnPoint")[0].GetComponent<Transform>();
+        this.transform.SetParent(spawnPoint, false);
 
+    }
+    private IEnumerator Start()
+    {
+        yield return new WaitForSeconds(2f);
+        if (pv == null)
+            pv = GetComponent<PhotonView>();
+
+        if (pv.IsMine)
+            Init(PhotonNetwork.LocalPlayer);
+        else
+            Init(PhotonNetwork.PlayerListOthers[0]);
+    }
     public void Init(Player p)
     {
-        if(pv == null)
-            pv = GetComponent<PhotonView>();
-        
-        if (!pv.IsMine)
-            return;
-        
+      
         PlayerName.text = p.NickName;
         UpdateXp((int)p.CustomProperties["XP"]);
-        InitCharacter((int)p.CustomProperties["c1"]);
-        InitCharacter((int)p.CustomProperties["c2"]);
-        InitCharacter((int)p.CustomProperties["c3"]);
-        InitCharacter((int)p.CustomProperties["c4"]);
+        InitCharacter((int)p.CustomProperties["c1"],0);
+        InitCharacter((int)p.CustomProperties["c2"],1);
+        InitCharacter((int)p.CustomProperties["c3"],2);
+        InitCharacter((int)p.CustomProperties["c4"],3);
         
     }
 
-    void InitCharacter(int ID)
+    void InitCharacter(int ID, int index)
     {
-        var temp =  PhotonNetwork.Instantiate(CharacterPrefab.name, new Vector2(characterContent.position.x, characterContent.position.y), Quaternion.identity);
-        temp.gameObject.transform.SetParent(characterContent);
-        temp.gameObject.GetComponent<CharacterController>().Init(ID);
+        characters[index].Init(ID);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
