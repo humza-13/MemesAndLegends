@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SpawnPoint
   - CharacterResource
+  - CharacterSpawn
   layers:
   - Default
   - TransparentFX

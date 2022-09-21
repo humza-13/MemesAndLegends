@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public TMP_Text PlayerName;
     public Slider XpSlider;
     public Transform characterContent;
-    public List<CharacterController> characters;
+    public List<Charactercontroller> characters;
     public GameObject CharacterPrefab;
 
     public PhotonView pv;
@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
 
     void InitCharacter(int ID, int index)
     {
-        characters[index].Init(ID);
+        characters[index].Init(ID, index);
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
