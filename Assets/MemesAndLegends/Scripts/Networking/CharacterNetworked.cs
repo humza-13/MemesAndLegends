@@ -4,6 +4,8 @@ using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using static UnityEngine.GraphicsBuffer;
 
 public class CharacterNetworked : MonoBehaviour
 {
@@ -40,9 +42,11 @@ public class CharacterNetworked : MonoBehaviour
             if (this.pv.ViewID == _pv)
             {
                 character_controller.blockID = blockID;
-            
 
-                SPAWN.GetComponent<RectTransform>().anchoredPosition = new Vector3(targetPosition.x + 150, targetPosition.y, 1);
+                SPAWN.GetComponent<RectTransform>().DOAnchorPos(new Vector3(targetPosition.x + 150, targetPosition.y, 1), 0.3f)
+                    .SetEase(Ease.Linear);
+
+               // SPAWN.GetComponent<RectTransform>().anchoredPosition = new Vector3(targetPosition.x + 150, targetPosition.y, 1);
             }
         }
     }

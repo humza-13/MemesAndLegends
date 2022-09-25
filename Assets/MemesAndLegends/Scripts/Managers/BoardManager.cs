@@ -91,7 +91,9 @@ public class BoardManager : MonoBehaviour
     {
         int _row = (int)location.x;
         int _col = (int)location.y;
-        int DEPTH = character.character_controller.characterProps.Movement_Range; 
+        int DEPTH = character.character_controller.characterProps.Movement_Range;
+       
+        
         ResetActiveSyncers();
         
         for (int i = 1; i <= DEPTH; i++)
@@ -151,6 +153,151 @@ public class BoardManager : MonoBehaviour
                     }
                     break;
 
+                case CharacterObject.MovementType.Omni_Directional:
+                    Vector2 fr = new Vector2((_row + i), (_col + DEPTH));
+                    Vector2 fl = new Vector2((_row + i), (_col - DEPTH));
+                    Vector2 dr = new Vector2((_row - i), (_col + DEPTH));
+                    Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
+                    int l = _col - i;
+                    int r = _col + i;
+
+              
+                    //left
+                    if (l >= 0)
+                    {
+                        var syncer = Board[_row][l].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+                    //right
+                    if (r < 8)
+                    {
+                        var syncer = Board[_row][r].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+
+                    // forward right
+                    if (fr.x < 8 && fr.y < 8)
+                    {
+                        for (int j = _col; j <= fr.y; j++)
+                        {
+                            var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerMoveBlockValid(syncer.ID))
+                            {
+                                ActiveSyncers.Add(syncer);
+                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                                syncer.SetGolden(true, p);
+                            }
+                        }
+                    }
+                    // forward left
+                    if (fl.x < 8 && fl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= fl.y; j--)
+                        {
+                            var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerMoveBlockValid(syncer.ID))
+                            {
+                                ActiveSyncers.Add(syncer);
+                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                                syncer.SetGolden(true, p);
+                            }
+                        }
+                    }
+                    // back right
+                    if (dr.x >= 0 && dr.y < 8)
+                    {
+                        for (int j = _col; j <= dr.y; j++)
+                        {
+                            var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerMoveBlockValid(syncer.ID))
+                            {
+                                ActiveSyncers.Add(syncer);
+                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                                syncer.SetGolden(true, p);
+                            }
+                        }
+                    }
+                    // down left
+                    if (dl.x >= 0 && dl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= dl.y; j--)
+                        {
+                            var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerMoveBlockValid(syncer.ID))
+                            {
+                                ActiveSyncers.Add(syncer);
+                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                                syncer.SetGolden(true, p);
+                            }
+                        }
+                    }
+                    break;
+
+                case CharacterObject.MovementType.Diagnole:
+                    Vector2 ur = new Vector2((_row + i), (_col + i));
+                    Vector2 ul = new Vector2((_row + i), (_col - i));
+                    Vector2 br = new Vector2((_row - i), (_col + i));
+                    Vector2 bl = new Vector2((_row - i), (_col - i));
+
+                    // Upper right
+                    if (ur.x < 8 && ur.y < 8)
+                    {
+                        var syncer = Board[(int)ur.x][(int)ur.y].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+
+                    // Upper left
+                    if (ul.x < 8 && ul.y >= 0)
+                    {
+                        var syncer = Board[(int)ul.x][(int)ul.y].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+
+                    // Down right
+                    if (br.x >= 0 && br.y < 8)
+                    {
+                        var syncer = Board[(int)br.x][(int)br.y].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+
+                    // Down left
+                    if (bl.x >= 0 && bl.y >= 0)
+                    {
+                        var syncer = Board[(int)bl.x][(int)bl.y].GetComponent<CubeSyncer>();
+                        if (CheckPlayerMoveBlockValid(syncer.ID))
+                        {
+                            ActiveSyncers.Add(syncer);
+                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                            syncer.SetGolden(true, p);
+                        }
+                    }
+
+                    break;
             }
             
         }

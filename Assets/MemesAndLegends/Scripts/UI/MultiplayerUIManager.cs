@@ -24,6 +24,7 @@ public class MultiplayerUIManager : MonoBehaviour
 
     [Header("Network Manager")]
     public GameObject NetworkManager;
+    public GameObject ErrorUI;
 
     #region Create Room
     public void onLobbyValueChanged(string name)
@@ -65,15 +66,22 @@ public class MultiplayerUIManager : MonoBehaviour
     #region UI
     public void OpenMultiplayerMenu()
     {
-        ActionMenu.SetActive(false);
-        MultiplayerMenu.SetActive(true);
-        NetworkManager.SetActive(true);
-          
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c1", ClientInfo.PlayerCharacters[0] } });
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c2", ClientInfo.PlayerCharacters[1] } });
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c3", ClientInfo.PlayerCharacters[2] } });  
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c4", ClientInfo.PlayerCharacters[3] } });    
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "XP", ClientInfo.XP } });
+        if(ClientInfo.PlayerCharacters == null || ClientInfo.PlayerCharacters?.Count < 4)
+        {
+            ErrorUI.SetActive(true);
+        }
+        else
+        {
+            ActionMenu.SetActive(false);
+            MultiplayerMenu.SetActive(true);
+            NetworkManager.SetActive(true);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c1", ClientInfo.PlayerCharacters[0] } });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c2", ClientInfo.PlayerCharacters[1] } });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c3", ClientInfo.PlayerCharacters[2] } });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "c4", ClientInfo.PlayerCharacters[3] } });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "XP", ClientInfo.XP } });
+        }
+       
     }
 
     public void CloseMultiplayerMenu()

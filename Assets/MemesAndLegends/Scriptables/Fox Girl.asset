@@ -24,7 +24,7 @@ MonoBehaviour:
   Attack_Power: 100
   Defence: 15
   Health: 40
-  Movement: 2
+  Movement: 1
   Movement_Range: 1
   Attack: 1
   Attack_Range: 2
