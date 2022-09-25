@@ -24,6 +24,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
     public PhotonView pv;
     public CharacterResource resource;
     private int ID;
+    public BlockID blockID;
    
 
     private void Awake()

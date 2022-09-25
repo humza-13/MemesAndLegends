@@ -18,8 +18,9 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public PhotonView pv;
     void Awake()
     {
-        var spawnPoint = GameObject.FindGameObjectsWithTag("SpawnPoint")[0].GetComponent<Transform>();
+        var spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponent<Transform>();
         this.transform.SetParent(spawnPoint, false);
+        BoardManager.Instance.players.Add(this);
 
     }
     private IEnumerator Start()
@@ -35,6 +36,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
     }
     public void Init(Player p)
     {
+        if (p.IsMasterClient)
+            this.transform.SetAsFirstSibling();
       
         PlayerName.text = p.NickName;
         UpdateXp((int)p.CustomProperties["XP"]);
