@@ -25,7 +25,7 @@ public class BoardManager : MonoBehaviour
     public List<PlayerController> players;
     public List<CubeSyncer> ActiveSyncers;
 
-    [SerializeField]public List<List<GameObject>> Board;
+    [SerializeField] public List<List<GameObject>> Board;
     private static BoardManager instance;
     public static BoardManager Instance
     {
@@ -43,12 +43,12 @@ public class BoardManager : MonoBehaviour
         Board = new List<List<GameObject>>();
         pv = GetComponent<PhotonView>();
         PhotonNetwork.Instantiate(PlayerPrefab.name, PlayerContent.position, Quaternion.identity);
-        
+
         yield return new WaitForSeconds(3);
         LoadingUI.SetActive(false);
 
         PopulateBoard();
-    
+
     }
     private void PopulateBoard()
     {
@@ -63,12 +63,12 @@ public class BoardManager : MonoBehaviour
     }
 
     public GameObject GetBlockWithID(BlockID ID)
-    { 
-        foreach(var row in Board)
+    {
+        foreach (var row in Board)
         {
             foreach (var col in row)
             {
-                if(col.GetComponent<CubeSyncer>().ID == ID)
+                if (col.GetComponent<CubeSyncer>().ID == ID)
                     return col;
             }
         }
@@ -78,22 +78,36 @@ public class BoardManager : MonoBehaviour
     {
         for (int row = 0; row < Board.Count; row++)
         {
-            for(int col = 0; col < Board[row].Count; col++)
+            for (int col = 0; col < Board[row].Count; col++)
             {
                 if (Board[row][col].GetComponent<CubeSyncer>().ID == ID)
-                    return new Vector2(row,col);
+                    return new Vector2(row, col);
             }
         }
         return Vector2.zero;
     }
+    private void ActivateSyncer(CubeSyncer syncer, CharacterNetworked character, Player p, ActionType action)
+    {
+        ActiveSyncers.Add(syncer);
 
-    public void CalculateMove(Vector2 location, CharacterNetworked character, Player p)
+        switch (action) {
+            
+            case ActionType.Move:
+                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                syncer.SetGolden(true, p);
+                break;
+            case ActionType.Attack:
+                syncer.action = () => { Debug.Log("ATTACKING"); ResetActiveSyncers(); };
+                syncer.SetRed(true, p);
+                break;
+        }
+}
+
+    public void CalculateMove(Vector2 location, CharacterNetworked character, Player p, ActionType action)
     {
         int _row = (int)location.x;
         int _col = (int)location.y;
         int DEPTH = character.character_controller.characterProps.Movement_Range;
-       
-        
         ResetActiveSyncers();
         
         for (int i = 1; i <= DEPTH; i++)
@@ -112,44 +126,28 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[_row + i][_col].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
                     //backward
                     if (back >= 0)
                     {
                         var syncer = Board[_row - i][_col].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
                     //left
                     if (left >= 0)
                     {
                         var syncer = Board[_row][_col - i].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
                     //right
                     if (right < 8)
                     {
                         var syncer = Board[_row][_col + i].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
                     break;
 
@@ -167,22 +165,14 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[_row][l].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
                     //right
                     if (r < 8)
                     {
                         var syncer = Board[_row][r].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
 
                     // forward right
@@ -192,11 +182,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerMoveBlockValid(syncer.ID))
-                            {
-                                ActiveSyncers.Add(syncer);
-                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                                syncer.SetGolden(true, p);
-                            }
+                                ActivateSyncer(syncer, character, p, action);
                         }
                     }
                     // forward left
@@ -206,11 +192,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerMoveBlockValid(syncer.ID))
-                            {
-                                ActiveSyncers.Add(syncer);
-                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                                syncer.SetGolden(true, p);
-                            }
+                                ActivateSyncer(syncer, character, p, action);
                         }
                     }
                     // back right
@@ -220,11 +202,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerMoveBlockValid(syncer.ID))
-                            {
-                                ActiveSyncers.Add(syncer);
-                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                                syncer.SetGolden(true, p);
-                            }
+                                ActivateSyncer(syncer, character, p, action);
                         }
                     }
                     // down left
@@ -234,11 +212,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerMoveBlockValid(syncer.ID))
-                            {
-                                ActiveSyncers.Add(syncer);
-                                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                                syncer.SetGolden(true, p);
-                            }
+                                ActivateSyncer(syncer, character, p, action);
                         }
                     }
                     break;
@@ -254,11 +228,7 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[(int)ur.x][(int)ur.y].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
 
                     // Upper left
@@ -266,11 +236,7 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[(int)ul.x][(int)ul.y].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
 
                     // Down right
@@ -278,11 +244,7 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[(int)br.x][(int)br.y].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
 
                     // Down left
@@ -290,11 +252,7 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[(int)bl.x][(int)bl.y].GetComponent<CubeSyncer>();
                         if (CheckPlayerMoveBlockValid(syncer.ID))
-                        {
-                            ActiveSyncers.Add(syncer);
-                            syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
-                            syncer.SetGolden(true, p);
-                        }
+                            ActivateSyncer(syncer, character, p, action);
                     }
 
                     break;
@@ -304,6 +262,90 @@ public class BoardManager : MonoBehaviour
 
 
     }
+    public void CalculateAttack(Vector2 location, CharacterNetworked character, Player p, ActionType action)
+    {
+        int _row = (int)location.x;
+        int _col = (int)location.y;
+        int DEPTH = character.character_controller.characterProps.Attack_Range;
+        ResetActiveSyncers();
+
+        for (int i = 1; i <= DEPTH; i++)
+        {
+            switch (character.character_controller.characterProps.Attack)
+            {
+                case CharacterObject.AttackType.Omni_Directional:
+                    Vector2 fr = new Vector2((_row + i), (_col + DEPTH));
+                    Vector2 fl = new Vector2((_row + i), (_col - DEPTH));
+                    Vector2 dr = new Vector2((_row - i), (_col + DEPTH));
+                    Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
+                    int l = _col - i;
+                    int r = _col + i;
+                    //left
+                    if (l >= 0)
+                    {
+                        var syncer = Board[_row][l].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            ActivateSyncer(syncer, character, p, action);
+                    }
+                    //right
+                    if (r < 8)
+                    {
+                        var syncer = Board[_row][r].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            ActivateSyncer(syncer, character, p, action);
+                    }
+
+                    // forward right
+                    if (fr.x < 8 && fr.y < 8)
+                    {
+                        for (int j = _col; j <= fr.y; j++)
+                        {
+                            var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                ActivateSyncer(syncer, character, p, action);
+                        }
+                    }
+                    // forward left
+                    if (fl.x < 8 && fl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= fl.y; j--)
+                        {
+                            var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                ActivateSyncer(syncer, character, p, action);
+                        }
+                    }
+                    // back right
+                    if (dr.x >= 0 && dr.y < 8)
+                    {
+                        for (int j = _col; j <= dr.y; j++)
+                        {
+                            var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                ActivateSyncer(syncer, character, p, action);
+                        }
+                    }
+                    // down left
+                    if (dl.x >= 0 && dl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= dl.y; j--)
+                        {
+                            var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                ActivateSyncer(syncer, character, p, action);
+                        }
+                    }
+                    break;
+                case CharacterObject.AttackType.None:
+                    return;
+
+            }
+
+        }
+
+
+    }
+
 
     private void ResetActiveSyncers()
     {
@@ -315,6 +357,14 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    public enum ActionType
+    {
+        Move = 1,
+        Attack = 2,
+        Special = 3
+
+    }
+
     private bool CheckPlayerMoveBlockValid(BlockID ID)
     {
         foreach(var p in players)
@@ -322,5 +372,13 @@ public class BoardManager : MonoBehaviour
                 if(c.blockID == ID)
                     return false;
         return true;
+    }
+    private bool CheckPlayerAttackBlockValid(BlockID ID)
+    {
+        foreach (var p in players)
+            foreach (var c in p.characters)
+                if (c.blockID == ID && !c.pv.IsMine)
+                    return true;
+        return false;
     }
 }

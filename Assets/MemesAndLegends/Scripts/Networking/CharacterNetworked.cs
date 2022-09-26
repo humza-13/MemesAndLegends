@@ -45,8 +45,6 @@ public class CharacterNetworked : MonoBehaviour
 
                 SPAWN.GetComponent<RectTransform>().DOAnchorPos(new Vector3(targetPosition.x + 150, targetPosition.y, 1), 0.3f)
                     .SetEase(Ease.Linear);
-
-               // SPAWN.GetComponent<RectTransform>().anchoredPosition = new Vector3(targetPosition.x + 150, targetPosition.y, 1);
             }
         }
     }
@@ -72,7 +70,7 @@ public class CharacterNetworked : MonoBehaviour
             return;
 
         var _current = BoardManager.Instance.FindLocation(character_controller.blockID);
-        BoardManager.Instance.CalculateMove(_current,this ,PhotonNetwork.LocalPlayer);
+        BoardManager.Instance.CalculateAttack(_current,this ,PhotonNetwork.LocalPlayer, BoardManager.ActionType.Move);
       
         
     }
