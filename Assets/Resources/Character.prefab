@@ -157,6 +157,8 @@ MonoBehaviour:
   dieVFX: {fileID: 3053407613871910937}
   healthVFX: {fileID: 2442928601466658122}
   specialVFX: {fileID: 5458240109083409178}
+  AttackUsed: 0
+  SpecialUsed: 0
 --- !u!114 &7758092039879387255
 MonoBehaviour:
   m_ObjectHideFlags: 0

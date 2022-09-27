@@ -31,6 +31,8 @@ public class BoardManager : MonoBehaviour
     public List<CubeSyncer> ActiveSyncers;
     public GameObject InGameUI;
     public List<GameObject> GameMoves;
+    public GameObject winUI;
+    public TMPro.TMP_Text status;
 
     [SerializeField] public List<List<GameObject>> Board;
     private static BoardManager instance;
@@ -55,6 +57,17 @@ public class BoardManager : MonoBehaviour
         LoadingUI.SetActive(false);
 
         PopulateBoard();
+
+    }
+
+    [PunRPC]
+    public void EndGame(Player p)
+    {
+        if (p.IsLocal)
+            status.text = "You Loose";
+        else
+            status.text = "You Win";
+        winUI.SetActive(true);
 
     }
     private void PopulateBoard()

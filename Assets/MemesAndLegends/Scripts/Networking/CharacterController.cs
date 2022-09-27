@@ -88,7 +88,15 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
     public void Die()
     {
         body.GetComponent<CharacterNetworked>().pv.RPC("Die",RpcTarget.All);
-        Invoke(nameof(Destroy),0.5f);
+        var players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var player in players)
+            if (player.GetComponent<PlayerController>().pv.IsMine)
+            {
+                player.GetComponent<PlayerController>().characters.Remove(this);
+                player.GetComponent<PlayerController>().CheckGameEnd();
+            }
+
+        Invoke(nameof(Destroy),1f);
     }
     private void Destroy()
     {

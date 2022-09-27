@@ -70,4 +70,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
             XpSlider.maxValue *= 10;
         XpSlider.value = Xp; 
     }
+
+    public void CheckGameEnd()
+    {
+        if(characters.Count <= 0)
+            BoardManager.Instance.pv.RPC("EndGame", RpcTarget.All, PhotonNetwork.LocalPlayer);
+    }
 }
