@@ -681,6 +681,7 @@ MonoBehaviour:
   - {fileID: 2345828127182555858}
   - {fileID: 1087123210777632191}
   CharacterPrefab: {fileID: 3548867139222323616, guid: c0394adc13216ea44b452e03a88d2fb7, type: 3}
+  XP: 0
   pv: {fileID: 8265602881634551159}
 --- !u!225 &3175448561402868366
 CanvasGroup:

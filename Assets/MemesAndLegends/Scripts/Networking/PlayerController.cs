@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     public Transform characterContent;
     public List<Charactercontroller> characters;
     public GameObject CharacterPrefab;
-    private int XP;
+    public int XP;
 
     public PhotonView pv;
     void Awake()
@@ -61,10 +61,10 @@ public class PlayerController : MonoBehaviour, IPunObservable
     }
 
     [PunRPC]
-    public void RewardKillXP(int xp)
+    public void RewardKillXP(int xp, Player p)
     {
-        if (pv.IsMine)
-        {
+        if (p.IsLocal)
+        { 
             XP += xp;
             UpdateXp(XP);
         }

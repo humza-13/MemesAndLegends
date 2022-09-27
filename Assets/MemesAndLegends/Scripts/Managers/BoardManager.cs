@@ -69,7 +69,6 @@ public class BoardManager : MonoBehaviour
         else
             status.text = "You Win";
         winUI.SetActive(true);
-
     }
     private void PopulateBoard()
     {

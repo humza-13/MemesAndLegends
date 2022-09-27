@@ -40,8 +40,8 @@ public class CharacterManager : MonoBehaviour
     private void Start()
     {
         SetCharacterStage(resource.characterObjectsLevel1[_currentSelected]);
+        playerXp.text = ClientInfo.XP.ToString();
     }
-
     public void MoveNext()
     {
         _currentSelected = _currentSelected >= resource.characterObjectsLevel1.Count-1 ? 0 : (_currentSelected + 1);
@@ -74,6 +74,7 @@ public class CharacterManager : MonoBehaviour
     public void OpenCharacterSelect()
     {
         characterSelectPanel.SetActive(true);
+        playerXp.text = ClientInfo.XP.ToString();
     }
     public void CloseCharacterSelect()
     {

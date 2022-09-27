@@ -140,7 +140,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
                 if (player.pv.IsMine)
                 {
                     int _xp = (int)characterProps.DeadXP;
-                    player.pv.RPC("RewardKillXP", RpcTarget.All, _xp);
+                    player.pv.RPC("RewardKillXP", RpcTarget.All, _xp, PhotonNetwork.LocalPlayer);
                 }
             }
         }

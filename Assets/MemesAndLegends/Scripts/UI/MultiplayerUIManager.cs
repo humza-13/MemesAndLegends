@@ -119,6 +119,7 @@ public class MultiplayerUIManager : MonoBehaviour
     public void CloseLobby()
     {
         Lobby.SetActive(false);
+        PhotonNetwork.LeaveRoom();
     }
 
 

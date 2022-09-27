@@ -2601,18 +2601,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
-        m_MethodName: LeaveSession
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &262090527
 GameObject:
   m_ObjectHideFlags: 0
@@ -11788,7 +11776,7 @@ MonoBehaviour:
   characterlevel: {fileID: 3152619896199251389}
   characterlimit: {fileID: 1026274924}
   characterSpecial: {fileID: 1644546929}
-  playerXp: {fileID: 5167622668023673261}
+  playerXp: {fileID: 1880506433}
   characterlevelFill: {fileID: 3152619896916405182}
   characterHealth: {fileID: 3152619897381345926}
   characterAttack: {fileID: 3152619896793379945}
@@ -40866,7 +40854,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &3844636548474086143
 GameObject:
   m_ObjectHideFlags: 0
