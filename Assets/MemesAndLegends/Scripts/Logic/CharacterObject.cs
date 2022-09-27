@@ -43,6 +43,9 @@ public class CharacterObject : ScriptableObject
     [Header("Limit")]
     public int Limit;
 
+    [Header("RewardXP")]
+    public RewardXP DeadXP;
+
     public enum AbillityType
     {
         Increase_Defence = 1,
@@ -67,6 +70,14 @@ public class CharacterObject : ScriptableObject
     {
         Mortal_Class = 1,
         Monster_Class = 2
+    }
+    public enum RewardXP
+    {
+        Mortal1 = 20,
+        Mortal2 = 40,
+        Monster1 = 25,
+        Monster2 = 50,
+        Turn = 5
     }
 
 

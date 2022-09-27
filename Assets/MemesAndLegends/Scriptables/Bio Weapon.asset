@@ -33,3 +33,4 @@ MonoBehaviour:
   Power: 20
   Power_Range: 0
   Limit: 0
+  DeadXP: 25

@@ -140,7 +140,6 @@ public class CharacterNetworked : MonoBehaviour
     [PunRPC]
     public void InitCharacter(int ID, int SpawnIndex, int index)
     {
-        var players = GameObject.FindGameObjectsWithTag("Player");
         BlockID BLOCK_ID;
      
         CharacterObject characterProps = GameObject.FindGameObjectsWithTag("CharacterResource")[0].GetComponent<CharacterResource>().FindCharacterWithID(ID).ShallowCopy();
@@ -154,9 +153,9 @@ public class CharacterNetworked : MonoBehaviour
             self_spawn[SpawnIndex].gameObject.name = characterProps.Name;
             BLOCK_ID = self_spawn[SpawnIndex].gameObject.GetComponent<PlayerLocation>().PlayerCurrentBlock;
 
-            foreach (GameObject p in players)
-                if (p.GetComponent<PlayerController>().pv.IsMine)
-                    player_controller = p.GetComponent<PlayerController>();
+            foreach (var p in BoardManager.Instance.players)
+                if (p.pv.IsMine)
+                    player_controller = p;
         }
         else
         {
@@ -168,9 +167,9 @@ public class CharacterNetworked : MonoBehaviour
 
             BLOCK_ID = enemy_spawn[SpawnIndex].gameObject.GetComponent<PlayerLocation>().PlayerCurrentBlock;
 
-            foreach (GameObject p in players)
-                if (!p.GetComponent<PlayerController>().pv.IsMine)
-                    player_controller = p.GetComponent<PlayerController>();
+            foreach (var p in BoardManager.Instance.players)
+                if (!p.pv.IsMine)
+                    player_controller = p;
 
         }
         this.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;

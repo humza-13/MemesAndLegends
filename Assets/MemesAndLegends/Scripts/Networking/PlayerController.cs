@@ -5,15 +5,17 @@ using TMPro;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using ExitGames.Client.Photon.StructWrapping;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour, IPunObservable
 {
     public TMP_Text PlayerName;
+    public TMP_Text PlayerXPText;
     public Slider XpSlider;
     public Transform characterContent;
     public List<Charactercontroller> characters;
     public GameObject CharacterPrefab;
+    private int XP;
 
     public PhotonView pv;
     void Awake()
@@ -21,7 +23,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
         var spawnPoint = GameObject.FindGameObjectWithTag("SpawnPoint").GetComponent<Transform>();
         this.transform.SetParent(spawnPoint, false);
         BoardManager.Instance.players.Add(this);
-
+        XP = ClientInfo.XP;
     }
     private IEnumerator Start()
     {
@@ -48,6 +50,26 @@ public class PlayerController : MonoBehaviour, IPunObservable
         
     }
 
+    [PunRPC]
+    public void RewardPlayerXP(int xp)
+    {
+        if (pv.IsMine)
+        {
+            XP += xp;
+            UpdateXp(XP);
+        }
+    }
+
+    [PunRPC]
+    public void RewardKillXP(int xp)
+    {
+        if (pv.IsMine)
+        {
+            XP += xp;
+            UpdateXp(XP);
+        }
+    }
+
     void InitCharacter(int ID, int index)
     {
         characters[index].Init(ID, index);
@@ -56,7 +78,7 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(ClientInfo.XP);
+            stream.SendNext(XP);
         }
         if (stream.IsReading)
         {
@@ -68,12 +90,19 @@ public class PlayerController : MonoBehaviour, IPunObservable
     {
         if (Xp > XpSlider.maxValue)
             XpSlider.maxValue *= 10;
-        XpSlider.value = Xp; 
+        XpSlider.DOValue(Xp, 1.5f, true);
+        PlayerXPText.text = Xp.ToString();
+        ClientInfo.XP = Xp;
     }
 
     public void CheckGameEnd()
     {
-        if(characters.Count <= 0)
-            BoardManager.Instance.pv.RPC("EndGame", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        if (characters.Count <= 0)
+            Invoke(nameof(EndGame), 1f);
+          
+    }
+    private void EndGame()
+    {
+        BoardManager.Instance.pv.RPC("EndGame", RpcTarget.All, PhotonNetwork.LocalPlayer);
     }
 }

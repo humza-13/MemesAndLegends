@@ -31,14 +31,28 @@ public class Timmer : MonoBehaviour, IPunObservable
     {
         if (!BoardManager.Instance.EndTurn.GetComponent<PhotonView>().IsMine)
             return;
+
+        pv.RPC("ResetTimmer", RpcTarget.All);
+      
         BoardManager.Instance.ResetPlayerMovesData();
         BoardManager.Instance.ResetActiveSyncers();
+        
+        foreach (var p in BoardManager.Instance.players)
+            if (p.pv.IsMine)
+                p.pv.RPC("RewardPlayerXP", RpcTarget.All, (int)CharacterObject.RewardXP.Turn);
+
         if (PhotonNetwork.PlayerListOthers.Length > 0)
             BoardManager.Instance.EndTurn.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.PlayerListOthers[0]);
-
+     
+        
+    }
+    [PunRPC]
+    public void ResetTimmer()
+    {
         seconds = 95;
         UpdateTime(seconds);
     }
+
     public void UpdateTime(float time)
     {
         if (seconds <= 0)

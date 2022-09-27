@@ -34,3 +34,4 @@ MonoBehaviour:
   Power: 10
   Power_Range: 3
   Limit: 0
+  DeadXP: 20

@@ -45,6 +45,9 @@ MonoBehaviour:
   - HealthVFX
   - AbilityVFX
   - EndGame
+  - RewardPlayerXP
+  - RewardKillXP
+  - ResetTimmer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
@@ -663,5 +664,10 @@ public class BoardManager : MonoBehaviour
                     c.body.GetComponent<CharacterNetworked>().AttackUsed = false;
                     c.body.GetComponent<CharacterNetworked>().SpecialUsed = false;
                 }
+    }
+    public void OnHome()
+    {
+        PhotonNetwork.LeaveRoom(this);
+        SceneManager.LoadScene("Home");
     }
 }

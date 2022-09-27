@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening;
+using Photon.Pun.UtilityScripts;
 
 public class Charactercontroller : MonoBehaviour, IPunObservable
 {
@@ -87,16 +88,17 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
     [PunRPC]
     public void Die()
     {
-        body.GetComponent<CharacterNetworked>().pv.RPC("Die",RpcTarget.All);
-        var players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (var player in players)
-            if (player.GetComponent<PlayerController>().pv.IsMine)
-            {
-                player.GetComponent<PlayerController>().characters.Remove(this);
-                player.GetComponent<PlayerController>().CheckGameEnd();
-            }
+        body.GetComponent<CharacterNetworked>().pv.RPC("Die", RpcTarget.All);
+     
+            foreach (var player in BoardManager.Instance.players)       
+                if (player.pv.IsMine)
+                {
+                    this.blockID = BlockID.none;
+                    player.characters.Remove(this);
+                    player.CheckGameEnd();
+                }
 
-        Invoke(nameof(Destroy),1f);
+        Invoke(nameof(Destroy),0.5f);
     }
     private void Destroy()
     {
@@ -128,16 +130,26 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
         if (characterProps.Health > 0)
         {
             Health.text = characterProps.Health.ToString();
-            HealthSlider.DOValue(characterProps.Health, 1, false);
+            HealthSlider.DOValue(characterProps.Health, 1, true);
         }
         else
+        {
             pv.RPC("Die", RpcTarget.All);
+            foreach (var player in BoardManager.Instance.players)
+            {
+                if (player.pv.IsMine)
+                {
+                    int _xp = (int)characterProps.DeadXP;
+                    player.pv.RPC("RewardKillXP", RpcTarget.All, _xp);
+                }
+            }
+        }
     }
     public void SetHealth(int health)
     {
         characterProps.Health = health;
         Health.text = health.ToString();
-        HealthSlider.DOValue(health, 1, false);
+        HealthSlider.DOValue(health, 1, true);
 
     }
     public void SetAttack(int attack)
@@ -155,7 +167,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
       //  {
             // add actual defence
             Defence.text = defence.ToString();
-            DefenceSlider.value = defence;
+            DefenceSlider.DOValue(defence, 1, true);
       //  }
     }
 }
