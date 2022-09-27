@@ -123,7 +123,7 @@
     <Compile Include="Assets\ConsolePro\Remote\LiteNetLib\Utils\NtpPacket.cs" />
     <Compile Include="Assets\MemesAndLegends\Scripts\Utils\LoadingHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
-    <Compile Include="Assets\MemesAndLegends\Scripts\Networking\CharacterController.cs" />
+    <Compile Include="Assets\MemesAndLegends\Scripts\Networking\Charactercontroller.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
     <Compile Include="Assets\ConsolePro\Remote\LiteNetLib\ConnectionRequest.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
@@ -157,6 +157,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
     <Compile Include="Assets\MemesAndLegends\Scripts\Networking\PlayerController.cs" />
+    <Compile Include="Assets\MemesAndLegends\Scripts\Networking\Timmer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

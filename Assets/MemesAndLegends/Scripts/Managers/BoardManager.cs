@@ -4,7 +4,11 @@ using Photon.Realtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 public class BoardManager : MonoBehaviour
 {
@@ -12,6 +16,7 @@ public class BoardManager : MonoBehaviour
     public Transform PlayerContent;
     public PhotonView pv;
     public GameObject LoadingUI;
+    public GameObject EndTurn;
 
     [Header("Board Rows")]
     public List<GameObject> R1;
@@ -24,6 +29,8 @@ public class BoardManager : MonoBehaviour
     public List<GameObject> R8;
     public List<PlayerController> players;
     public List<CubeSyncer> ActiveSyncers;
+    public GameObject InGameUI;
+    public List<GameObject> GameMoves;
 
     [SerializeField] public List<List<GameObject>> Board;
     private static BoardManager instance;
@@ -62,6 +69,48 @@ public class BoardManager : MonoBehaviour
         Board.Add(R8);
     }
 
+    public void SetInGameUI(Vector2 pos, UnityAction move, UnityAction attack, UnityAction special, bool attackUsed, bool specialUsed)
+    {
+        InGameUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(pos.x, pos.y + 100);
+       
+        GameMoves[0].GetComponent<Button>().onClick.RemoveAllListeners();
+        GameMoves[0].GetComponent<Button>().onClick.AddListener(move);
+
+        if (!specialUsed)
+        {
+            GameMoves[1].SetActive(true);
+            GameMoves[1].GetComponent<Button>().onClick.RemoveAllListeners();
+            GameMoves[1].GetComponent<Button>().onClick.AddListener(attack);
+        }
+        else
+        {
+            GameMoves[1].SetActive(false);
+        }
+
+        if(!attackUsed)
+        {
+            GameMoves[2].SetActive(true);
+            GameMoves[2].GetComponent<Button>().onClick.RemoveAllListeners();
+            GameMoves[2].GetComponent<Button>().onClick.AddListener(special);
+        }
+        else
+        {
+            GameMoves[2].SetActive(false);
+        }
+
+        InGameUI.SetActive(true);
+        CancelInvoke();
+        Invoke(nameof(DisableHud),2.5f);
+    }
+    
+    private void Update()
+    {
+        EndTurn.GetComponent<Button>().interactable = EndTurn.GetComponent<PhotonView>().IsMine;
+    }
+    void DisableHud()
+    {
+        InGameUI.SetActive(false);
+    }
     public GameObject GetBlockWithID(BlockID ID)
     {
         foreach (var row in Board)
@@ -86,18 +135,18 @@ public class BoardManager : MonoBehaviour
         }
         return Vector2.zero;
     }
-    private void ActivateSyncer(CubeSyncer syncer, CharacterNetworked character, Player p, ActionType action)
+    private void ActivateSyncer(CubeSyncer syncer, CharacterNetworked character, Player p, ActionType action, Charactercontroller othercharacter = null)
     {
         ActiveSyncers.Add(syncer);
 
         switch (action) {
             
             case ActionType.Move:
-                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); };
+                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers();};
                 syncer.SetGolden(true, p);
                 break;
             case ActionType.Attack:
-                syncer.action = () => { Debug.Log("ATTACKING"); ResetActiveSyncers(); };
+                syncer.action = () => { othercharacter.pv.RPC("CalculateDamage", RpcTarget.All, character.character_controller.characterProps.Attack_Power,false); ResetActiveSyncers(); character.AttackUsed = true; };
                 syncer.SetRed(true, p);
                 break;
         }
@@ -285,14 +334,15 @@ public class BoardManager : MonoBehaviour
                     {
                         var syncer = Board[_row][l].GetComponent<CubeSyncer>();
                         if (CheckPlayerAttackBlockValid(syncer.ID))
-                            ActivateSyncer(syncer, character, p, action);
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
+                        
                     }
                     //right
                     if (r < 8)
                     {
                         var syncer = Board[_row][r].GetComponent<CubeSyncer>();
                         if (CheckPlayerAttackBlockValid(syncer.ID))
-                            ActivateSyncer(syncer, character, p, action);
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
                     }
 
                     // forward right
@@ -302,7 +352,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerAttackBlockValid(syncer.ID))
-                                ActivateSyncer(syncer, character, p, action);
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
                         }
                     }
                     // forward left
@@ -312,7 +362,8 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerAttackBlockValid(syncer.ID))
-                                ActivateSyncer(syncer, character, p, action);
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
+
                         }
                     }
                     // back right
@@ -322,7 +373,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerAttackBlockValid(syncer.ID))
-                                ActivateSyncer(syncer, character, p, action);
+                                ActivateSyncer(syncer, character, p, action,ReturnAttackedPlayer(syncer.ID));
                         }
                     }
                     // down left
@@ -332,7 +383,7 @@ public class BoardManager : MonoBehaviour
                         {
                             var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
                             if (CheckPlayerAttackBlockValid(syncer.ID))
-                                ActivateSyncer(syncer, character, p, action);
+                                ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
                         }
                     }
                     break;
@@ -345,10 +396,193 @@ public class BoardManager : MonoBehaviour
 
 
     }
-
-
-    private void ResetActiveSyncers()
+    public void CalculateAbiltiy(Vector2 location, CharacterNetworked character, Player p, ActionType action)
     {
+        int _row = (int)location.x;
+        int _col = (int)location.y;
+        int DEPTH = character.character_controller.characterProps.Power_Range;
+        ResetActiveSyncers();
+
+        switch(character.character_controller.characterProps.Abillity)
+        {
+            case CharacterObject.AbillityType.Heal:
+                character.character_controller.characterProps.Health += character.character_controller.characterProps.Power;
+                character.character_controller.SetHealth(character.character_controller.characterProps.Health);
+                character.pv.RPC("AbilityVFX", RpcTarget.All);
+                character.SpecialUsed = true;
+                break;
+
+            case CharacterObject.AbillityType.Increase_Defence:
+                for (int i = 1; i <= DEPTH; i++)
+                {
+                    Vector2 fr = new Vector2((_row + i), (_col + DEPTH));
+                    Vector2 fl = new Vector2((_row + i), (_col - DEPTH));
+                    Vector2 dr = new Vector2((_row - i), (_col + DEPTH));
+                    Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
+                    int l = _col - i;
+                    int r = _col + i;
+                    //left
+                    if (l >= 0)
+                    {
+                        var syncer = Board[_row][l].GetComponent<CubeSyncer>();
+                        if (CheckPlayerSpecialBlockValid(syncer.ID))
+                            IncreaseDefence(syncer.ID, character);
+
+                    }
+                    //right
+                    if (r < 8)
+                    {
+                        var syncer = Board[_row][r].GetComponent<CubeSyncer>();
+                        if (CheckPlayerSpecialBlockValid(syncer.ID))
+                            IncreaseDefence(syncer.ID, character);
+                    }
+
+                    // forward right
+                    if (fr.x < 8 && fr.y < 8)
+                    {
+                        for (int j = _col; j <= fr.y; j++)
+                        {
+                            var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerSpecialBlockValid(syncer.ID))
+                                IncreaseDefence(syncer.ID, character);
+                        }
+                    }
+                    // forward left
+                    if (fl.x < 8 && fl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= fl.y; j--)
+                        {
+                            var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerSpecialBlockValid(syncer.ID))
+                                IncreaseDefence(syncer.ID, character);
+
+                        }
+                    }
+                    // back right
+                    if (dr.x >= 0 && dr.y < 8)
+                    {
+                        for (int j = _col; j <= dr.y; j++)
+                        {
+                            var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerSpecialBlockValid(syncer.ID))
+                                IncreaseDefence(syncer.ID, character);
+                        }
+                    }
+                    // down left
+                    if (dl.x >= 0 && dl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= dl.y; j--)
+                        {
+                            var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerSpecialBlockValid(syncer.ID))
+                                IncreaseDefence(syncer.ID, character);
+                        }
+                    }
+                          
+
+                }
+                break;
+
+            case CharacterObject.AbillityType.True_Damage:
+                for (int i = 1; i <= DEPTH; i++)
+                {
+                    Vector2 fr = new Vector2((_row + i), (_col + DEPTH));
+                    Vector2 fl = new Vector2((_row + i), (_col - DEPTH));
+                    Vector2 dr = new Vector2((_row - i), (_col + DEPTH));
+                    Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
+                    int l = _col - i;
+                    int r = _col + i;
+                    //left
+                    if (l >= 0)
+                    {
+                        var syncer = Board[_row][l].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            TrueDamage(syncer.ID, character);
+
+                    }
+                    //right
+                    if (r < 8)
+                    {
+                        var syncer = Board[_row][r].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            TrueDamage(syncer.ID, character);
+                    }
+
+                    // forward right
+                    if (fr.x < 8 && fr.y < 8)
+                    {
+                        for (int j = _col; j <= fr.y; j++)
+                        {
+                            var syncer = Board[(int)fr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                TrueDamage(syncer.ID, character);
+                        }
+                    }
+                    // forward left
+                    if (fl.x < 8 && fl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= fl.y; j--)
+                        {
+                            var syncer = Board[(int)fl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                TrueDamage(syncer.ID, character);
+
+                        }
+                    }
+                    // back right
+                    if (dr.x >= 0 && dr.y < 8)
+                    {
+                        for (int j = _col; j <= dr.y; j++)
+                        {
+                            var syncer = Board[(int)dr.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                TrueDamage(syncer.ID, character);
+                        }
+                    }
+                    // down left
+                    if (dl.x >= 0 && dl.y >= 0)
+                    {
+                        for (int j = _col - 1; j >= dl.y; j--)
+                        {
+                            var syncer = Board[(int)dl.x][j].GetComponent<CubeSyncer>();
+                            if (CheckPlayerAttackBlockValid(syncer.ID))
+                                TrueDamage(syncer.ID, character);
+                        }
+                    }
+                }
+                break;
+            case CharacterObject.AbillityType.GainXP:
+                foreach (var player in players)
+                    if(player.pv.IsMine)
+                    {
+                        ClientInfo.XP += character.character_controller.characterProps.Power;
+                        player.UpdateXp(ClientInfo.XP);
+                        character.SpecialUsed = true;
+                    }
+                    break;
+        }
+    }
+
+
+    private void IncreaseDefence(BlockID ID, CharacterNetworked character)
+    {
+        var _temp = ReturnSpecialPlayer(ID);
+        _temp.characterProps.Defence += character.character_controller.characterProps.Power;
+        _temp.SetDefence(_temp.characterProps.Defence);
+        _temp.body.GetComponent<CharacterNetworked>().pv.RPC("AbilityVFX", RpcTarget.All);
+        character.SpecialUsed = true;
+    }
+
+    private void TrueDamage(BlockID ID, CharacterNetworked character)
+    {
+        var _temp = ReturnAttackedPlayer(ID);
+        _temp.pv.RPC("CalculateDamage", RpcTarget.All,character.character_controller.characterProps.Power ,true);
+        character.SpecialUsed = true;
+    }
+
+    public void ResetActiveSyncers()
+    {
+        InGameUI.SetActive(false);
         for (int x = ActiveSyncers.Count - 1; x > -1; x--)
         {
             ActiveSyncers[x].SetGolden(false);
@@ -380,5 +614,41 @@ public class BoardManager : MonoBehaviour
                 if (c.blockID == ID && !c.pv.IsMine)
                     return true;
         return false;
+    }
+    private bool CheckPlayerSpecialBlockValid(BlockID ID)
+    {
+        foreach (var p in players)
+            foreach (var c in p.characters)
+                if (c.blockID == ID && c.pv.IsMine)
+                    return true;
+        return false;
+    }
+
+    private Charactercontroller ReturnSpecialPlayer(BlockID ID)
+    {
+        foreach (var p in players)
+            foreach (var c in p.characters)
+                if (c.blockID == ID)
+                    return c;
+        return null;
+    }
+    private Charactercontroller ReturnAttackedPlayer(BlockID ID)
+    {
+        foreach (var p in players)
+            foreach (var c in p.characters)
+                if (c.blockID == ID && !c.pv.IsMine)
+                    return c;
+        return null;
+    }
+
+    public void ResetPlayerMovesData()
+    {
+        foreach (var p in players)
+            foreach (var c in p.characters)
+                if(c.pv.IsMine)
+                {
+                    c.body.GetComponent<CharacterNetworked>().AttackUsed = false;
+                    c.body.GetComponent<CharacterNetworked>().SpecialUsed = false;
+                }
     }
 }

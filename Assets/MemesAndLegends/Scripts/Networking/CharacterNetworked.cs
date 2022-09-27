@@ -9,13 +9,18 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CharacterNetworked : MonoBehaviour
 {
-    private PhotonView pv;
+    public PhotonView pv;
     private List<Transform> self_spawn;
     private List<Transform> enemy_spawn;
     public PlayerController player_controller;
     public Charactercontroller character_controller;
     public const byte MoveUnitsToTargetPositionEventCode = 1;
     public GameObject SPAWN;
+    public GameObject dieVFX;
+    public GameObject healthVFX;
+    public GameObject specialVFX;
+    public bool AttackUsed;
+    public bool SpecialUsed;
 
     private void OnEnable()
     {
@@ -69,10 +74,24 @@ public class CharacterNetworked : MonoBehaviour
         if (!pv.IsMine)
             return;
 
-        var _current = BoardManager.Instance.FindLocation(character_controller.blockID);
-        BoardManager.Instance.CalculateAttack(_current,this ,PhotonNetwork.LocalPlayer, BoardManager.ActionType.Move);
-      
-        
+        if (BoardManager.Instance.EndTurn.GetComponent<PhotonView>().IsMine)
+        {
+            var _current = BoardManager.Instance.FindLocation(character_controller.blockID);
+
+            BoardManager.Instance.SetInGameUI(this.transform.parent.GetComponent<RectTransform>().anchoredPosition,
+                () =>
+                {
+                    BoardManager.Instance.CalculateMove(_current, this, PhotonNetwork.LocalPlayer, BoardManager.ActionType.Move);
+                },
+                () =>
+                {
+                    BoardManager.Instance.CalculateAttack(_current, this, PhotonNetwork.LocalPlayer, BoardManager.ActionType.Attack);
+                },
+                () =>
+                {
+                    BoardManager.Instance.CalculateAbiltiy(_current, this, PhotonNetwork.LocalPlayer, BoardManager.ActionType.Attack);
+                }, AttackUsed, SpecialUsed);
+        }
     }
     public void Move(BlockID ID)
     {
@@ -87,6 +106,36 @@ public class CharacterNetworked : MonoBehaviour
 
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, SendOptions.SendReliable);
+    }
+    [PunRPC]
+    public void Die()
+    {
+        dieVFX.SetActive(true);
+        Invoke(nameof(Destroy),0.5f);
+    }
+
+    [PunRPC]
+    public void HealthVFX()
+    {
+        healthVFX.SetActive(true);
+        Invoke(nameof(DisableAllVFX), 0.5f);
+    }
+    [PunRPC]
+    public void AbilityVFX()
+    {
+        specialVFX.SetActive(true);
+        Invoke(nameof(DisableAllVFX), 0.5f);
+    }
+
+    private void DisableAllVFX()
+    {
+        healthVFX.SetActive(false);
+        specialVFX.SetActive(false);
+        dieVFX.SetActive(false);
+    }
+    private void Destroy()
+    {
+        GameObject.Destroy(this.gameObject);
     }
     [PunRPC]
     public void InitCharacter(int ID, int SpawnIndex, int index)
@@ -114,6 +163,7 @@ public class CharacterNetworked : MonoBehaviour
             this.GetComponent<Transform>().SetParent(enemy_spawn[SpawnIndex]);
             enemy_spawn[SpawnIndex].gameObject.name = characterProps.Name;
             SPAWN = enemy_spawn[SpawnIndex].gameObject;
+            this.GetComponent<Image>().raycastTarget = false;
 
 
             BLOCK_ID = enemy_spawn[SpawnIndex].gameObject.GetComponent<PlayerLocation>().PlayerCurrentBlock;
@@ -126,5 +176,7 @@ public class CharacterNetworked : MonoBehaviour
         this.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         character_controller = player_controller.characters[index];
         character_controller.blockID = BLOCK_ID;
+        character_controller.body = this.gameObject;
+     
     }
 }

@@ -23,7 +23,7 @@ MonoBehaviour:
   Character_Power_Sprite: {fileID: 21300000, guid: 1d24290f967d845358a5920bb8b3d6c0, type: 3}
   Attack_Power: 100
   Defence: 15
-  Health: 40
+  Health: 240
   Movement: 1
   Movement_Range: 1
   Attack: 1

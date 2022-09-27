@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
+using DG.Tweening;
 
 public class Charactercontroller : MonoBehaviour, IPunObservable
 {
@@ -23,6 +23,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
     public CharacterObject characterProps;
     public PhotonView pv;
     public CharacterResource resource;
+    public GameObject body;
     private int ID;
     public BlockID blockID;
    
@@ -49,7 +50,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
         Name.text = characterProps.Name;
         Icon.sprite = characterProps.Character_Sprite;
  
-        UpdateHealth(characterProps.Health);
+        SetHealth(characterProps.Health);
         SetAttack(characterProps.Attack_Power);
         SetDefence(characterProps.Defence);
         SpawnBody(index);
@@ -63,6 +64,35 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
         character = PhotonNetwork.Instantiate("Character", SpawnPoint.position, Quaternion.identity,0);
         _pv = character.GetComponent<PhotonView>();
         _pv.RPC("InitCharacter", RpcTarget.All, ID, SpawnIndex, index);
+        
+    }
+
+    [PunRPC]
+    public void CalculateDamage(int DamageAmmont, bool TrueDamage)
+    {
+        int _damage;
+        if (!TrueDamage)
+        {
+            body.GetComponent<CharacterNetworked>().pv.RPC("HealthVFX", RpcTarget.All);
+            _damage = DamageAmmont - characterProps.Defence;
+        }
+        else
+        {
+            body.GetComponent<CharacterNetworked>().pv.RPC("AbilityVFX", RpcTarget.All);
+            _damage = DamageAmmont;
+        }
+            this.UpdateHealth(_damage);
+    }
+
+    [PunRPC]
+    public void Die()
+    {
+        body.GetComponent<CharacterNetworked>().pv.RPC("Die",RpcTarget.All);
+        Invoke(nameof(Destroy),0.5f);
+    }
+    private void Destroy()
+    {
+        GameObject.Destroy(this.gameObject);  
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -76,7 +106,7 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
             }
             if (stream.IsReading)
             {
-                UpdateHealth((int)stream.ReceiveNext());
+                SetHealth((int)stream.ReceiveNext());
                 SetAttack((int)stream.ReceiveNext());
                 SetDefence((int)stream.ReceiveNext());
             }
@@ -85,12 +115,22 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
 
     public void UpdateHealth(int health)
     {
-//if(pv.IsMine)
-      //  {
-            // add actual health
-            Health.text = health.ToString();
-            HealthSlider.value = health;
-     //   }
+        characterProps.Health -= health;
+
+        if (characterProps.Health > 0)
+        {
+            Health.text = characterProps.Health.ToString();
+            HealthSlider.DOValue(characterProps.Health, 1, false);
+        }
+        else
+            pv.RPC("Die", RpcTarget.All);
+    }
+    public void SetHealth(int health)
+    {
+        characterProps.Health = health;
+        Health.text = health.ToString();
+        HealthSlider.DOValue(health, 1, false);
+
     }
     public void SetAttack(int attack)
     {

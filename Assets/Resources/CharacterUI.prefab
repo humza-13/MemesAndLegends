@@ -200,9 +200,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 150
+  m_MaxValue: 500
   m_WholeNumbers: 0
-  m_Value: 81.5
+  m_Value: 5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1427,8 +1427,13 @@ MonoBehaviour:
   HealthSlider: {fileID: 448724762485277592}
   DefenceSlider: {fileID: 3548867139971237648}
   AttackSlider: {fileID: 3548867139188954802}
+  SpawnIndex: 0
   characterProps: {fileID: 0}
   pv: {fileID: 7117936611227314923}
+  resource: {fileID: 0}
+  body: {fileID: 0}
+  blockID: 0
+  _pv: {fileID: 0}
 --- !u!1 &3548867139461295682
 GameObject:
   m_ObjectHideFlags: 0
