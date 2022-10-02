@@ -53,20 +53,8 @@ public class PlayerController : MonoBehaviour, IPunObservable
     [PunRPC]
     public void RewardPlayerXP(int xp)
     {
-        if (pv.IsMine)
-        {
-            XP += xp;
+          XP += xp;
             UpdateXp(XP);
-        }
-    }
-
-    public void RewardKillXP(int xp, Player p)
-    {
-        if (p.IsLocal)
-        { 
-            XP += xp;
-            UpdateXp(XP);
-        }
     }
 
     void InitCharacter(int ID, int index)
@@ -91,7 +79,15 @@ public class PlayerController : MonoBehaviour, IPunObservable
             XpSlider.maxValue *= 10;
         XpSlider.DOValue(Xp, 1.5f, true);
         PlayerXPText.text = Xp.ToString();
-        ClientInfo.XP = Xp;
+
+    }
+
+    public void AssignXP()
+    {
+        if(!pv.IsMine)
+            return;
+
+        ClientInfo.XP = XP;
     }
 
     public void CheckGameEnd()
@@ -103,5 +99,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
     private void EndGame()
     {
         BoardManager.Instance.pv.RPC("EndGame", RpcTarget.All, PhotonNetwork.LocalPlayer);
+        AssignXP();
     }
 }

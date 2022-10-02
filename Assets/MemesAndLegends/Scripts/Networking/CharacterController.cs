@@ -134,15 +134,8 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
         }
         else
         {
+            BoardManager.Instance.RewardPlayerKillXP((int)characterProps.DeadXP);
             pv.RPC("Die", RpcTarget.All);
-            foreach (var player in BoardManager.Instance.players)
-            {
-                if (player.pv.IsMine)
-                {
-                    int _xp = (int)characterProps.DeadXP;
-                    player.RewardKillXP(_xp, PhotonNetwork.LocalPlayer);
-                }
-            }
         }
     }
     public void SetHealth(int health)
@@ -154,20 +147,13 @@ public class Charactercontroller : MonoBehaviour, IPunObservable
     }
     public void SetAttack(int attack)
     {
-       // if (pv.IsMine)
-      //  {
-            // add actual attack
-            Attack.text = attack.ToString();
-            AttackSlider.value = attack;
-     //   }
+        Attack.text = attack.ToString();
+        AttackSlider.value = attack;
     }
     public void SetDefence(int defence)
     {
-      //  if (pv.IsMine)
-      //  {
-            // add actual defence
-            Defence.text = defence.ToString();
-            DefenceSlider.DOValue(defence, 1, true);
-      //  }
+        Defence.text = defence.ToString();
+        DefenceSlider.DOValue(defence, 1, true);
+ 
     }
 }

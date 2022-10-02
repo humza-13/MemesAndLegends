@@ -655,6 +655,15 @@ public class BoardManager : MonoBehaviour
                     c.body.GetComponent<CharacterNetworked>().MoveUsed = false;
                 }
     }
+    public void RewardPlayerKillXP(int _xp)
+    {
+        if (!EndTurn.GetComponent<PhotonView>().IsMine)
+            return;
+
+        foreach (var p in players)
+            if (p.pv.IsMine)
+                p.pv.RPC("RewardPlayerXP", RpcTarget.All, _xp);
+    }
     public void OnHome()
     {
         PhotonNetwork.LeaveRoom(this);
