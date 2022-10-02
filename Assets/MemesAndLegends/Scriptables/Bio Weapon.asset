@@ -22,11 +22,11 @@ MonoBehaviour:
   Character_Power_Sprite: {fileID: 21300000, guid: 3c17ecb30cfea446a96f5d18fc830bbc, type: 3}
   Attack_Power: 65
   Defence: 15
-  Health: 310
+  Health: 210
   Movement: 3
   Movement_Range: 1
   Attack: 1
-  Attack_Range: 2
+  Attack_Range: 1
   HasSpecial: 1
   Abillity: 4
   Special_Description: Can heal itself 20 health points.

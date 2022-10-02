@@ -20,7 +20,7 @@ public class CharacterNetworked : MonoBehaviour
     public GameObject healthVFX;
     public GameObject specialVFX;
     public bool AttackUsed;
-    public bool SpecialUsed;
+    public bool MoveUsed;
 
     private void OnEnable()
     {
@@ -90,7 +90,7 @@ public class CharacterNetworked : MonoBehaviour
                 () =>
                 {
                     BoardManager.Instance.CalculateAbiltiy(_current, this, PhotonNetwork.LocalPlayer, BoardManager.ActionType.Attack);
-                }, AttackUsed, SpecialUsed);
+                }, AttackUsed, MoveUsed, character_controller.characterProps);
         }
     }
     public void Move(BlockID ID)

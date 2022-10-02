@@ -60,7 +60,6 @@ public class PlayerController : MonoBehaviour, IPunObservable
         }
     }
 
-    [PunRPC]
     public void RewardKillXP(int xp, Player p)
     {
         if (p.IsLocal)

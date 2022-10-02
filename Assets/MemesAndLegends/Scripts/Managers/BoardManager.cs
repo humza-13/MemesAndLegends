@@ -82,35 +82,26 @@ public class BoardManager : MonoBehaviour
         Board.Add(R8);
     }
 
-    public void SetInGameUI(Vector2 pos, UnityAction move, UnityAction attack, UnityAction special, bool attackUsed, bool specialUsed)
+    public void SetInGameUI(Vector2 pos, UnityAction move, UnityAction attack, UnityAction special, bool attackUsed, bool moveUsed, CharacterObject props)
     {
         InGameUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(pos.x, pos.y + 100);
-       
+
+            
+    // Moves Button
+        GameMoves[0].GetComponent<Button>().interactable = !moveUsed;
         GameMoves[0].GetComponent<Button>().onClick.RemoveAllListeners();
         GameMoves[0].GetComponent<Button>().onClick.AddListener(move);
 
-        if (!specialUsed)
-        {
-            GameMoves[1].SetActive(true);
-            GameMoves[1].GetComponent<Button>().onClick.RemoveAllListeners();
-            GameMoves[1].GetComponent<Button>().onClick.AddListener(attack);
-        }
-        else
-        {
-            GameMoves[1].SetActive(false);
-        }
-
-        if(!attackUsed)
-        {
-            GameMoves[2].SetActive(true);
-            GameMoves[2].GetComponent<Button>().onClick.RemoveAllListeners();
-            GameMoves[2].GetComponent<Button>().onClick.AddListener(special);
-        }
-        else
-        {
-            GameMoves[2].SetActive(false);
-        }
-
+    // Attack Button
+        GameMoves[1].GetComponent<Button>().interactable = !attackUsed && props.Attack_Power > 0;
+        GameMoves[1].GetComponent<Button>().onClick.RemoveAllListeners();
+        GameMoves[1].GetComponent<Button>().onClick.AddListener(attack);
+        
+    // Special Button
+        GameMoves[2].GetComponent<Button>().interactable = !attackUsed && props.HasSpecial;
+        GameMoves[2].GetComponent<Button>().onClick.RemoveAllListeners();
+        GameMoves[2].GetComponent<Button>().onClick.AddListener(special);
+      
         InGameUI.SetActive(true);
         CancelInvoke();
         Invoke(nameof(DisableHud),2.5f);
@@ -155,7 +146,7 @@ public class BoardManager : MonoBehaviour
         switch (action) {
             
             case ActionType.Move:
-                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers();};
+                syncer.action = () => { character.Move(syncer.ID); ResetActiveSyncers(); character.MoveUsed = true; };
                 syncer.SetGolden(true, p);
                 break;
             case ActionType.Attack:
@@ -422,7 +413,7 @@ public class BoardManager : MonoBehaviour
                 character.character_controller.characterProps.Health += character.character_controller.characterProps.Power;
                 character.character_controller.SetHealth(character.character_controller.characterProps.Health);
                 character.pv.RPC("AbilityVFX", RpcTarget.All);
-                character.SpecialUsed = true;
+                character.AttackUsed = true;
                 break;
 
             case CharacterObject.AbillityType.Increase_Defence:
@@ -570,7 +561,7 @@ public class BoardManager : MonoBehaviour
                     {
                         ClientInfo.XP += character.character_controller.characterProps.Power;
                         player.UpdateXp(ClientInfo.XP);
-                        character.SpecialUsed = true;
+                        character.AttackUsed = true;
                     }
                     break;
         }
@@ -583,14 +574,14 @@ public class BoardManager : MonoBehaviour
         _temp.characterProps.Defence += character.character_controller.characterProps.Power;
         _temp.SetDefence(_temp.characterProps.Defence);
         _temp.body.GetComponent<CharacterNetworked>().pv.RPC("AbilityVFX", RpcTarget.All);
-        character.SpecialUsed = true;
+        character.AttackUsed = true;
     }
 
     private void TrueDamage(BlockID ID, CharacterNetworked character)
     {
         var _temp = ReturnAttackedPlayer(ID);
         _temp.pv.RPC("CalculateDamage", RpcTarget.All,character.character_controller.characterProps.Power ,true);
-        character.SpecialUsed = true;
+        character.AttackUsed = true;
     }
 
     public void ResetActiveSyncers()
@@ -661,7 +652,7 @@ public class BoardManager : MonoBehaviour
                 if(c.pv.IsMine)
                 {
                     c.body.GetComponent<CharacterNetworked>().AttackUsed = false;
-                    c.body.GetComponent<CharacterNetworked>().SpecialUsed = false;
+                    c.body.GetComponent<CharacterNetworked>().MoveUsed = false;
                 }
     }
     public void OnHome()

@@ -14,7 +14,7 @@ public static class ClientInfo {
 
     public static int XP
     {
-        get => PlayerPrefs.GetInt("xp", 100);
+        get => PlayerPrefs.GetInt("xp", 0);
         set => PlayerPrefs.SetInt("xp", value);
     }
 
