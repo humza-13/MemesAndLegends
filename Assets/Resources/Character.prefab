@@ -159,7 +159,7 @@ MonoBehaviour:
   specialVFX: {fileID: 5458240109083409178}
   AttackUsed: 0
   MoveUsed: 0
-  SpecialUsed: 0
+  LIMIT_SPECIAL: 0
 --- !u!114 &7758092039879387255
 MonoBehaviour:
   m_ObjectHideFlags: 0
