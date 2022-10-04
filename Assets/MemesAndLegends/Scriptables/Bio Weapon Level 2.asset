@@ -31,6 +31,6 @@ MonoBehaviour:
   Abillity: 4
   Special_Description: Can heal itself 20 health points.
   Power: 30
-  Power_Range: 0
+  Power_Range: 350
   Limit: 0
   DeadXP: 50

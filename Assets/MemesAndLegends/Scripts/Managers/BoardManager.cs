@@ -410,10 +410,20 @@ public class BoardManager : MonoBehaviour
         switch(character.character_controller.characterProps.Abillity)
         {
             case CharacterObject.AbillityType.Heal:
-                character.character_controller.characterProps.Health += character.character_controller.characterProps.Power;
-                character.character_controller.SetHealth(character.character_controller.characterProps.Health);
-                character.pv.RPC("AbilityVFX", RpcTarget.All);
-                character.AttackUsed = true;
+                if (character.character_controller.characterProps.Health >= character.character_controller.characterProps.Power_Range)
+                    return;
+                else
+                {
+                    int _health = character.character_controller.characterProps.Health + character.character_controller.characterProps.Power;
+                    
+                    if (_health >= character.character_controller.characterProps.Power_Range)
+                        _health = character.character_controller.characterProps.Power_Range;
+                    
+                    character.character_controller.characterProps.Health = _health;
+                    character.character_controller.SetHealth(character.character_controller.characterProps.Health);
+                    character.pv.RPC("AbilityVFX", RpcTarget.All);
+                    character.AttackUsed = true;
+                }
                 break;
 
             case CharacterObject.AbillityType.Increase_Defence:
@@ -434,7 +444,7 @@ public class BoardManager : MonoBehaviour
 
                     }
                     //right
-                    if (r < 8)
+                    if (r < 8 && i !=0)
                     {
                         var syncer = Board[_row][r].GetComponent<CubeSyncer>();
                         if (CheckPlayerSpecialBlockValid(syncer.ID))
@@ -559,8 +569,8 @@ public class BoardManager : MonoBehaviour
                 foreach (var player in players)
                     if(player.pv.IsMine)
                     {
-                        ClientInfo.XP += character.character_controller.characterProps.Power;
-                        player.UpdateXp(ClientInfo.XP);
+                        player.XP += character.character_controller.characterProps.Power;
+                        player.UpdateXp(player.XP);
                         character.AttackUsed = true;
                     }
                     break;

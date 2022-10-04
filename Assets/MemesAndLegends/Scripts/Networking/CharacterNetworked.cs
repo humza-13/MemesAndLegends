@@ -21,6 +21,7 @@ public class CharacterNetworked : MonoBehaviour
     public GameObject specialVFX;
     public bool AttackUsed;
     public bool MoveUsed;
+    public bool SpecialUsed;
 
     private void OnEnable()
     {
