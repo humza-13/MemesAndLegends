@@ -444,7 +444,7 @@ public class BoardManager : MonoBehaviour
 
                     }
                     //right
-                    if (r < 8 && i !=0)
+                    if (r < 8 && i != 1)
                     {
                         var syncer = Board[_row][r].GetComponent<CubeSyncer>();
                         if (CheckPlayerSpecialBlockValid(syncer.ID))
