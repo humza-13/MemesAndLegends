@@ -82,7 +82,7 @@ public class BoardManager : MonoBehaviour
         Board.Add(R8);
     }
 
-    public void SetInGameUI(Vector2 pos, UnityAction move, UnityAction attack, UnityAction special, bool attackUsed, bool moveUsed, CharacterObject props)
+    public void SetInGameUI(Vector2 pos, UnityAction move, UnityAction attack, UnityAction special, bool attackUsed, bool moveUsed, CharacterObject props, bool LIMIT)
     {
         InGameUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(pos.x, pos.y + 100);
 
@@ -98,7 +98,7 @@ public class BoardManager : MonoBehaviour
         GameMoves[1].GetComponent<Button>().onClick.AddListener(attack);
         
     // Special Button
-        GameMoves[2].GetComponent<Button>().interactable = !attackUsed && props.HasSpecial;
+        GameMoves[2].GetComponent<Button>().interactable = !attackUsed && props.HasSpecial && !LIMIT;
         GameMoves[2].GetComponent<Button>().onClick.RemoveAllListeners();
         GameMoves[2].GetComponent<Button>().onClick.AddListener(special);
       
@@ -585,6 +585,7 @@ public class BoardManager : MonoBehaviour
         _temp.SetDefence(_temp.characterProps.Defence);
         _temp.body.GetComponent<CharacterNetworked>().pv.RPC("AbilityVFX", RpcTarget.All);
         character.AttackUsed = true;
+        character.LIMIT_SPECIAL = true;
     }
 
     private void TrueDamage(BlockID ID, CharacterNetworked character)

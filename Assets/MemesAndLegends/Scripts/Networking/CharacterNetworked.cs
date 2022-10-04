@@ -21,7 +21,7 @@ public class CharacterNetworked : MonoBehaviour
     public GameObject specialVFX;
     public bool AttackUsed;
     public bool MoveUsed;
-    public bool SpecialUsed;
+    public bool LIMIT_SPECIAL;
 
     private void OnEnable()
     {
@@ -91,7 +91,7 @@ public class CharacterNetworked : MonoBehaviour
                 () =>
                 {
                     BoardManager.Instance.CalculateAbiltiy(_current, this, PhotonNetwork.LocalPlayer, BoardManager.ActionType.Attack);
-                }, AttackUsed, MoveUsed, character_controller.characterProps);
+                }, AttackUsed, MoveUsed, character_controller.characterProps, LIMIT_SPECIAL);
         }
     }
     public void Move(BlockID ID)
