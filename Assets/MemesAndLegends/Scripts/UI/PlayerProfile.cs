@@ -10,6 +10,7 @@ public class PlayerProfile : MonoBehaviour
 
 	public GameObject ProfilePanel;
     public GameObject userNamePanel;
+    public GameObject RulesPanel;
    public void onProfileMenu()
     {
         ProfilePanel.SetActive(true);
@@ -18,7 +19,14 @@ public class PlayerProfile : MonoBehaviour
     {
         ProfilePanel.SetActive(false);
     }
-
+    public void onRules()
+    {
+        RulesPanel.SetActive(true);
+    }
+    public void ExitRules()
+    {
+        RulesPanel.SetActive(false);
+    }
     public void onUserDetailsChanged()
     {
         ClientInfo.Username = nicknameInput.text;
