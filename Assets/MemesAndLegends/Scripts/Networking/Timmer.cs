@@ -9,6 +9,7 @@ public class Timmer : MonoBehaviour, IPunObservable
     public PhotonView pv;
     float seconds = 95;
     public TMPro.TMP_Text Timetext;
+    private int turn;
 
 
     private void Update()
@@ -49,8 +50,13 @@ public class Timmer : MonoBehaviour, IPunObservable
     [PunRPC]
     public void ResetTimmer()
     {
+        turn += 1;
         seconds = 95;
         UpdateTime(seconds);
+        if(turn >= 2  && BoardManager.Instance.RESET_ABILITY)
+        {
+            BoardManager.Instance.ResetAbilityData();
+        }
     }
 
     public void UpdateTime(float time)

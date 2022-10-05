@@ -1,15 +1,16 @@
-using Mono.Cecil.Cil;
+
 using Photon.Pun;
 using Photon.Realtime;
-using System;
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
+
 using UnityEngine.UI;
+
 
 public class BoardManager : MonoBehaviour
 {
@@ -36,6 +37,10 @@ public class BoardManager : MonoBehaviour
     public TMPro.TMP_Text status;
 
     [SerializeField] public List<List<GameObject>> Board;
+    private List<Charactercontroller> ABILITY_HISTORY;
+    public bool RESET_ABILITY;
+    private Charactercontroller ABILITY_CREATURE;
+
     private static BoardManager instance;
     public static BoardManager Instance
     {
@@ -52,6 +57,7 @@ public class BoardManager : MonoBehaviour
     {
         Board = new List<List<GameObject>>();
         pv = GetComponent<PhotonView>();
+        ABILITY_HISTORY = new List<Charactercontroller>();
         PhotonNetwork.Instantiate(PlayerPrefab.name, PlayerContent.position, Quaternion.identity);
 
         yield return new WaitForSeconds(3);
@@ -59,6 +65,19 @@ public class BoardManager : MonoBehaviour
 
         PopulateBoard();
 
+    }
+
+    public void ResetAbilityData()
+    {
+        foreach(var c in ABILITY_HISTORY)
+        {
+            c.characterProps.Defence -= ABILITY_CREATURE.characterProps.Power;
+            c.SetDefence(c.characterProps.Defence);
+        }
+
+        ABILITY_HISTORY = new List<Charactercontroller>();
+        ABILITY_CREATURE = null;
+        RESET_ABILITY = false;
     }
 
     [PunRPC]
@@ -333,6 +352,25 @@ public class BoardManager : MonoBehaviour
                     Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
                     int l = _col - i;
                     int r = _col + i;
+                    int f = _row + 1; 
+                    int b = _row - 1;
+
+                    // forward
+                    if (f < 8)
+                    {
+                        var syncer = Board[f][_col].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
+                    }
+
+                    // back 
+                    if (b >= 0)
+                    {
+                        var syncer = Board[b][_col].GetComponent<CubeSyncer>();
+                        if (CheckPlayerAttackBlockValid(syncer.ID))
+                            ActivateSyncer(syncer, character, p, action, ReturnAttackedPlayer(syncer.ID));
+                    }
+
                     //left
                     if (l >= 0)
                     {
@@ -427,6 +465,8 @@ public class BoardManager : MonoBehaviour
                 break;
 
             case CharacterObject.AbillityType.Increase_Defence:
+                ABILITY_CREATURE = character.character_controller;
+                RESET_ABILITY = true;
                 for (int i = 1; i <= DEPTH; i++)
                 {
                     Vector2 fr = new Vector2((_row + i), (_col + DEPTH));
@@ -435,6 +475,8 @@ public class BoardManager : MonoBehaviour
                     Vector2 dl = new Vector2((_row - i), (_col - DEPTH));
                     int l = _col - i;
                     int r = _col + i;
+                    int f = _row + i;
+                    int b = _row - i;
                     //left
                     if (l >= 0)
                     {
@@ -444,13 +486,28 @@ public class BoardManager : MonoBehaviour
 
                     }
                     //right
-                    if (r < 8 && i != 1)
+                    if (r < 8)
                     {
                         var syncer = Board[_row][r].GetComponent<CubeSyncer>();
                         if (CheckPlayerSpecialBlockValid(syncer.ID))
                             IncreaseDefence(syncer.ID, character);
                     }
+                    //up
+                    if (f < 8)
+                    {
+                        var syncer = Board[f][_col].GetComponent<CubeSyncer>();
+                        if (CheckPlayerSpecialBlockValid(syncer.ID))
+                            IncreaseDefence(syncer.ID, character);
 
+                    }
+                    // back
+                    if (b >= 0)
+                    {
+                        var syncer = Board[b][_col].GetComponent<CubeSyncer>();
+                        if (CheckPlayerSpecialBlockValid(syncer.ID))
+                            IncreaseDefence(syncer.ID, character);
+
+                    }
                     // forward right
                     if (fr.x < 8 && fr.y < 8)
                     {
@@ -577,15 +634,15 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-
     private void IncreaseDefence(BlockID ID, CharacterNetworked character)
     {
         var _temp = ReturnSpecialPlayer(ID);
+        ABILITY_HISTORY.Add(_temp);
         _temp.characterProps.Defence += character.character_controller.characterProps.Power;
         _temp.SetDefence(_temp.characterProps.Defence);
         _temp.body.GetComponent<CharacterNetworked>().pv.RPC("AbilityVFX", RpcTarget.All);
         character.AttackUsed = true;
-        character.LIMIT_SPECIAL = true;
+       // character.LIMIT_SPECIAL = true;
     }
 
     private void TrueDamage(BlockID ID, CharacterNetworked character)
